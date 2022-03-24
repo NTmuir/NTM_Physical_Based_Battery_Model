@@ -1,4 +1,5 @@
 # Importing CSV data into Julia 
+
 Pkg.add("CSV")
 Pkg.add("DataFrames")
 Pkg.add("LinearAlgebra")
@@ -58,5 +59,5 @@ time_array = 1:length(data[:,1])
      plot!(time_array,Cell_12)
 
 
-
+PSO = Base.Abstractvector(Cell_1)
      
