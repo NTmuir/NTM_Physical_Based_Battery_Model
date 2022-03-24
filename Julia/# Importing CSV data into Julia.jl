@@ -59,5 +59,10 @@ time_array = 1:length(data[:,1])
      plot!(time_array,Cell_12)
 
 
+<<<<<<< HEAD:# Importing CSV data into Julia.jl
 PSO = Base.Abstractvector(Cell_1)
      
+=======
+
+     
+>>>>>>> c9fb3ec0c45c1816e1f4040ef77b7a22e862ba35:Julia/# Importing CSV data into Julia.jl
