@@ -7,7 +7,8 @@ Pkg.add("Plots")
 using CSV, DataFrames, LinearAlgebra, Pkg , Plots
  
 
-df = CSV.read("C:\\Users\\muirn\\Documents\\OBR\\Test_Data\\Test Data\\Segment 4\\220303 - Module Testing\\cellvoltages_2022-03-03-15-29-23.csv", DataFrame)
+
+    df = CSV.read("C:\\Users\\muirn\\Documents\\OBR\\Test_Data\\Test Data\\Segment 4\\220303 - Module Testing\\cellvoltages_2022-03-03-15-29-23.csv", DataFrame)
 
 
 data = Base.Matrix(df)
@@ -42,4 +43,20 @@ time_array = 1:length(data[:,1])
 
 #plotting of cell data
 
-figure_1 = plot(time_array,Cell_1)
+#figure_1
+     plot(time_array,Cell_1)
+     plot!(time_array,Cell_2)
+     plot!(time_array,Cell_3)
+     plot!(time_array,Cell_4)
+     plot!(time_array,Cell_5)
+     plot!(time_array,Cell_6)
+     plot!(time_array,Cell_7)
+     plot!(time_array,Cell_8)
+     plot!(time_array,Cell_9)
+     plot!(time_array,Cell_10)
+     plot!(time_array,Cell_11)
+     plot!(time_array,Cell_12)
+
+
+
+     
