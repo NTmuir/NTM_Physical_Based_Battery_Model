@@ -1,9 +1,0 @@
-Ensure pip installer is loaded into python, use this via cmd
-
-cd C:\Users\muirn\AppData\Local\Programs\Python\Python310
-python -m pip install virtualenv
-python -m virtualenv env
-env\Scripts\activate.bat
-pip install pybamm
-
-jupyter notebook
