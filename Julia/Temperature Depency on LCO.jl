@@ -116,6 +116,24 @@ for u in 1e-11:1e-13:20e-11
 end 
 
 p.θ[:k_n] = return5
+T8 = scatter(title="Average Sensistivty k_n")
+T9 = scatter(title="Delta Sensistivty k_n")
+
+return5 = p.θ[:k_n]
+
+#Anode reaction rate
+for u in 1e-11:1e-13:20e-11
+    p.θ[:k_n] = u
+    @time sol5 = simulate(p,1500,I=2,SOC=0,outputs=:all)
+    Delta_V5 = V_baseline - resize!(sol5.V,length(V_baseline))
+    Sens_Av5 = mean((Delta_V5/V_baseline).*100)
+    Sens_max5 = maximum((Delta_V5/V_baseline).*100)
+    Sens_min5 = minimum((Delta_V5/V_baseline).*100)
+    Variation5 = Sens_max5 - Sens_min5
+    scatter!(T8,(u,Sens_Av5),xlabel = "Thickness (um)",ylabel = "Average Variation (%)",  legend = false)
+    scatter!(T9,(u,Variation5),xlabel = "Thickness (um)",ylabel = "Average Variation (%)",  legend = false)
+end 
+
 
 
 
