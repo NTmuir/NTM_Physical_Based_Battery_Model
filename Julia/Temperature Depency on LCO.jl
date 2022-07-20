@@ -1,4 +1,5 @@
 using PETLION, Plots, Statistics
+
 @time p = petlion(LCO;
 N_p = 10, # discretizations in the cathode
 N_s = 10, # discretizations in the separator
@@ -43,7 +44,7 @@ T3 = scatter(title="Delta Sensistivty l_p")
 return2 = p.θ[:l_p]
 
 # Cathode thickness
-for j in 35e-5:1e-7:79e-5
+for j in 35e-5:1e-6:79e-5
     p.θ[:l_p] = j
     @time sol2 = simulate(p,1500,I=2,SOC=0,outputs=:all)
     Delta_V2 = V_baseline - resize!(sol2.V,length(V_baseline))
@@ -63,7 +64,7 @@ T5 = scatter(title="Delta Sensistivty ϵ_p")
 return3 = p.θ[:ϵ_p]
 
 #Cathode Active Material Volume
-for k in 0.35:0.0001:0.5
+for k in 0.35:0.001:0.5
     p.θ[:ϵ_p] = k
     @time sol3 = simulate(p,1500,I=2,SOC=0,outputs=:all)
     Delta_V3 = V_baseline - resize!(sol3.V,length(V_baseline))
@@ -77,22 +78,22 @@ end
 
 p.θ[:ϵ_p] = return3
 
-T6 = scatter(title="Average Sensistivty l_p")
-T7 = scatter(title="Delta Sensistivty l_p")
+T006 = scatter(title="Average Sensistivty l_n")
+T007 = scatter(title="Delta Sensistivty l_n")
 
 return4 = p.θ[:l_n]
 
 #Anode thickness
-for l in 6e-5:1e-7:20e-5
+for l in 6e-5:1e-6:20e-5
     p.θ[:l_n] = l
-    @time sol4 = simulate(p,1600,I=2,SOC=0,outputs=:all)
+    @time sol4 = simulate(p,1500,I=2,SOC=0,outputs=:all)
     Delta_V4 = V_baseline - resize!(sol4.V,length(V_baseline))
     Sens_Av4 = mean((Delta_V4/V_baseline).*100)
     Sens_max4 = maximum((Delta_V4/V_baseline).*100)
     Sens_min4 = minimum((Delta_V4/V_baseline).*100)
     Variation4 = Sens_max4 - Sens_min4
-    scatter!(T6,(l,Sens_Av4),xlabel = "Thickness (um)",ylabel = "Average Variation (%)",  legend = false)
-    scatter!(T7,(l,Variation4),xlabel = "Thickness (um)",ylabel = "Average Variation (%)",  legend = false)
+    scatter!(T006,(l,Sens_Av4),xlabel = "Thickness (um)",ylabel = "Average Variation (%)",  legend = false)
+    scatter!(T007,(l,Variation4),xlabel = "Thickness (um)",ylabel = "Average Variation (%)",  legend = false)
 end 
 
 p.θ[:l_n] = return4
@@ -103,7 +104,7 @@ T9 = scatter(title="Delta Sensistivty k_n")
 return5 = p.θ[:k_n]
 
 #Anode reaction rate
-for u in 1e-11:1e-13:20e-11
+for u in 1e-11:1e-12:20e-11
     p.θ[:k_n] = u
     @time sol5 = simulate(p,1500,I=2,SOC=0,outputs=:all)
     Delta_V5 = V_baseline - resize!(sol5.V,length(V_baseline))
@@ -116,23 +117,6 @@ for u in 1e-11:1e-13:20e-11
 end 
 
 p.θ[:k_n] = return5
-T8 = scatter(title="Average Sensistivty k_n")
-T9 = scatter(title="Delta Sensistivty k_n")
-
-return5 = p.θ[:k_n]
-
-#Anode reaction rate
-for u in 1e-11:1e-13:20e-11
-    p.θ[:k_n] = u
-    @time sol5 = simulate(p,1500,I=2,SOC=0,outputs=:all)
-    Delta_V5 = V_baseline - resize!(sol5.V,length(V_baseline))
-    Sens_Av5 = mean((Delta_V5/V_baseline).*100)
-    Sens_max5 = maximum((Delta_V5/V_baseline).*100)
-    Sens_min5 = minimum((Delta_V5/V_baseline).*100)
-    Variation5 = Sens_max5 - Sens_min5
-    scatter!(T8,(u,Sens_Av5),xlabel = "Thickness (um)",ylabel = "Average Variation (%)",  legend = false)
-    scatter!(T9,(u,Variation5),xlabel = "Thickness (um)",ylabel = "Average Variation (%)",  legend = false)
-end 
 
 
 
