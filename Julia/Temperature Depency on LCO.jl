@@ -1,6 +1,6 @@
 using PETLION, Plots, Statistics
 
-@time p = petlion(LCO;
+@time p = petlion(Chen2020;
 N_p = 10, # discretizations in the cathode
 N_s = 10, # discretizations in the separator
 N_n = 10, # discretizations in the anode
