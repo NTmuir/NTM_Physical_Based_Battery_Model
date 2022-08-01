@@ -31,12 +31,10 @@ T_prime = plot(soly1, :V)
 Tx = scatter(title="Average Sensistivty Temperature")
 Tx1 = scatter(title="Delta Sensistivty Temperature")
 
-Vx = plot(title = "Terminal Voltage")
-
 return1 = p.θ[:D_s]
 
 # Dependency
-for i in 1e-10:1e-11:10e-10
+for i in 1e-10:1e-10:10e-10
     @time p.θ[:D_s] = i;
     for k in 1:length(i)
        sol = "Sol_$k "
@@ -67,7 +65,7 @@ Tx2 = scatter(title="Average Sensistivty Temperature")
 Tx3 = scatter(title="Delta Sensistivty Temperature")
 
 # Dependency
-for i in 1e-10:1e-11:10e-10
+for i in 1e-10:1e-10:10e-10
     @time p.θ[:D_n] = i;
     for k in 1:length(i)
        sol = "Sol1_$k "
@@ -110,15 +108,15 @@ Tx5 = scatter(title="Delta Sensistivty Temperature")
         simulate!(sol, p, 3600/20, I=1)
         simulate!(sol, p, 2*3600,  I=:rest)
         end
-    Delta_V1 = V_baseline - resize!(sol.V,length(V_baseline))
-    Sens_Av1 = mean((Delta_V1/V_baseline).*100)
-    Sens_max1 = maximum((Delta_V1/V_baseline).*100)
-    Sens_min1 = minimum((Delta_V1/V_baseline).*100)
-    Variation1 = Sens_max1 - Sens_min1
-    scatter!(Tx4,(i,Sens_Av1),xlabel = "Meh",ylabel = "Average Variation (%)",  legend = false)
-    scatter!(Tx5,(i,Variation1),xlabel = "Meh",ylabel = "Average Variation (%)", legend = false)
-    print(i) 
+        Delta_V1 = V_baseline - resize!(sol.V,length(V_baseline))
+        Sens_Av1 = mean((Delta_V1/V_baseline).*100)
+        Sens_max1 = maximum((Delta_V1/V_baseline).*100)
+        Sens_min1 = minimum((Delta_V1/V_baseline).*100)
+        Variation1 = Sens_max1 - Sens_min1
+        scatter!(Tx4,(i,Sens_Av1),xlabel = "Meh",ylabel = "Average Variation (%)",  legend = false)
+        scatter!(Tx5,(i,Variation1),xlabel = "Meh",ylabel = "Average Variation (%)", legend = false)
+        print(i) 
     end
 end 
-
+current()
 p.θ[:D_s] = return3
