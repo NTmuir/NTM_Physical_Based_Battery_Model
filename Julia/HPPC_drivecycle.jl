@@ -1,12 +1,12 @@
 using PETLION, Plots, Statistics, DataFrames
 
-@time p = petlion(Chen2020;
+p = petlion(Chen2020;
 N_p = 10, # discretizations in the cathode
 N_s = 10, # discretizations in the separator
 N_n = 10, # discretizations in the anode
 N_r_p = 10, # discretizations in the solid cathode particles
 N_r_n = 10, # discretizations in the solid anode particles
-temperature = false # temperature enabled or disabled
+temperature = false, # temperature enabled or disabled
 jacobian = :AD, # :AD (automatic-differenation) for convenience or :symbolic for speed
 )
 
@@ -14,12 +14,12 @@ jacobian = :AD, # :AD (automatic-differenation) for convenience or :symbolic for
 soly6 = solution()
 p.opts.outputs = (:t, :V, :I)
 p.opts.SOC = 1
-
+p.bounds.V_min = 3
 
 # Baseline
 p.θ[:T₀] = p.θ[:T_amb] 
 # HPPC: 9 5C pulses followed by 1 hour rests
-@time for i in 1:9
+@time for i in 1:10
     simulate!(soly6, p, 10, I=-5) #Pulse Discharge
     simulate!(soly6, p, 40, I=:rest) #Relax
     simulate!(soly6, p, 10, I=5) #Pulse Charge
@@ -33,12 +33,14 @@ T_prime = plot(soly6, :V)
 
 Tx2 = scatter(title="Average Sensitivty D_s")
 Tx3 = scatter(title="Delta Sensitivty D_s")
-
+Tx4 = scatter(title="RMSE D_s")
 return1 = p.θ[:D_s]
 
 Data1 = Float64[]
 Data2 = Vector[]
 Data3 = Vector[]
+Soc = Vector[]
+RMSE = Vector[]
 # Dependency
 for i in 1e-10:1e-11:10e-10
     @time p.θ[:D_s] = i;
@@ -48,7 +50,8 @@ for i in 1e-10:1e-11:10e-10
        sol = solution()
         p.opts.outputs = (:t, :V, :I)
         p.opts.SOC = 1
-        @time for j in 1:9
+        p.bounds.V_min = 3
+        for j in 1:10
             simulate!(sol, p, 10, I=-5) #Pulse Discharge
             simulate!(sol, p, 40, I=:rest) #Relax
             simulate!(sol, p, 10, I=5) #Pulse Charge
@@ -56,23 +59,33 @@ for i in 1e-10:1e-11:10e-10
             simulate!(sol, p, 3600,  I=:rest) #Hour Rest
         end
         Delta_V1 = V_baseline - resize!(sol.V,length(V_baseline))
-    Sens_Av1 = mean((Delta_V1/V_baseline).*100)
+         if maximum(sol.V) > 5
+            Delta_V1 = zeros(length(V_baseline))
+            print(i)
+        end
+           Sens_Av1 = mean((Delta_V1/V_baseline).*100)
     Sens_max1 = maximum((Delta_V1/V_baseline).*100)
     Sens_min1 = minimum((Delta_V1/V_baseline).*100)
     Variation1 = Sens_max1 - Sens_min1
     scatter!(Tx2,(i,Sens_Av1),xlabel = "m^2s^-1",ylabel = "Average Variation (%)",  legend = false)
     scatter!(Tx3,(i,Variation1),xlabel = "m^2s^-1",ylabel = "Delta Variation (%)", legend = false)
+    scatter!(Tx4,(i,RMSE),xlabel = "m^2s^-1", ylabel="raw RMSE")
     push!(Data1,Sens_Av1)
     push!(Data2,Delta_V1 )
-    push!(Data3,sol.V)
-    print(i) 
+    push!(Data3,resize!(sol.V,length(V_baseline)))
     end
-end 
+end
 
-Vx1 = plot(soly6.t,Data3,legend = false)
+# Post Plots for sweeps
+
+Vx1 = plot(soly6.t,Data3)
 ylims!(3,4.2)
 xlims!(0, 32000)
-Vx2 = plot(soly6.t,Data2,legend = false)
+Vx2 = plot(soly6.t,Data2, legend = false)
 ylims!(-0.2,0.2)
 xlims!(0, 32000)
+
+#RMSE calculation
+
 p.θ[:D_s] = return1
+
