@@ -1,0 +1,5 @@
+{
+    "diffEditor.maxFileSize": 0,
+    "diffEditor.maxComputationTime": 0,
+    "terminal.integrated.enablePersistentSessions": false
+}
