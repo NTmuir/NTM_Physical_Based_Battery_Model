@@ -1,0 +1,178 @@
+using PETLION, Plots, Statistics, DataFrames
+
+p = petlion(Chen2020;
+N_p = 10, # discretizations in the cathode
+N_s = 10, # discretizations in the separator
+N_n = 10, # discretizations in the anode
+N_r_p = 10, # discretizations in the solid cathode particles
+N_r_n = 10, # discretizations in the solid anode particles
+temperature = false, # temperature enabled or disabled
+jacobian = :AD, # :AD (automatic-differenation) for convenience or :symbolic for speed
+)
+
+# Load the solution structure with an initial SOC of 1
+soly = solution()
+p.opts.outputs = (:t, :V, :I)
+p.opts.SOC = 1
+p.bounds.V_min = 2.5
+p.bounds.V_max = 4.2
+
+## Baseline
+p.θ[:T₀] = p.θ[:T_amb] 
+# HPPC: 20 5C pulses followed by 1 hour rests
+@time for i in 1:20
+    simulate!(soly, p, 10, I=-5) #Pulse Discharge
+    simulate!(soly, p, 40, I=:rest) #Relax
+    simulate!(soly, p, 10, I=5) #Pulse Charge
+    simulate!(soly, p, 800, I=-1) #To remove 10% SOC
+    simulate!(soly, p, 3600,  I=:rest) #Hour Rest
+end
+
+V_baseline_1 = soly.V
+T_prime_1 = plot(soly, :V ,title = "HPPC 1C_5C")
+Time_1 = soly.t
+
+T1 = scatter(title="Average Sensitivty D_s")
+T2 = scatter(title="Delta Sensitivty D_s")
+return1 = p.θ[:D_s]
+
+Sens_Ds_1 = Float64[]
+Delta_V_Ds_1 = Vector[]
+Voltage_Ds_1 = Vector[]
+
+# Dependency for HPPC for D_s
+for i in 1e-10:1e-10:10e-10
+    @time p.θ[:D_s] = i
+    for k in 1:length(i)
+       sol = "Sol_$k "
+       print(sol) 
+       sol = solution()
+       Delta_V = HPPC_1C_5C(i,sol,p,V_baseline_1)
+        Sens_Av = mean((Delta_V/V_baseline_1).*100)
+        Sens_max = maximum((Delta_V/V_baseline_1).*100)
+        Sens_min = minimum((Delta_V/V_baseline_1).*100)
+        Variation = Sens_max - Sens_min
+        scatter!(T1,(i,Sens_Av),xlabel = "m^2s^-1",ylim = (-0.5,0.5), ylabel = "Average Variation (%)",  legend = false)
+        scatter!(T2,(i,Variation),xlabel = "m^2s^-1",ylabel = "Delta Variation (%)", legend = false)
+        push!(Sens_Ds_1,Sens_Av)
+        push!(Delta_V_Ds_1,Delta_V )
+        push!(Voltage_Ds_1,resize!(sol.V,length(V_baseline_1)))
+    end
+end
+
+Vx1 = plot(Time_1,Voltage_Ds_1,label = ["1e-10" "2e-10" "3e-10" "4e-10" "5e-10" "6e-10" "7e-10" "8e-10" "9e-10" "1e-9"])
+ylims!(3,4.2)
+xlims!(0, 32000)
+Vx2 = plot(Time_1,Delta_V_Ds_1, label = ["1e-10" "2e-10" "3e-10" "4e-10" "5e-10" "6e-10" "7e-10" "8e-10" "9e-10" "1e-9"])
+ylims!(-0.2,0.2)
+xlims!(0, 32000)
+
+T3 = scatter(title="Average Sensitivty D_s")
+T4 = scatter(title="Delta Sensitivty D_s")
+
+p.θ[:D_s] = return1 
+
+Sens_Ds_2 = Float64[]
+Delta_V_Ds_2 = Vector[]
+Voltage_Ds_2 = Vector[]
+
+#Baseline at Higher C
+soly_2 = solution()
+p.opts.outputs = (:t, :V, :I)
+p.opts.SOC = 1
+p.bounds.V_min = 2.5
+p.bounds.V_max = 4.2
+
+p.θ[:T₀] = p.θ[:T_amb] 
+# HPPC: 20 5C pulses followed by 1 hour rests
+@time for i in 1:20
+    simulate!(soly_2, p, 10, I=-0.96) #Pulse Discharge
+    simulate!(soly_2, p, 40, I=:rest) #Relax
+    simulate!(soly_2, p, 10, I=0.72) #Pulse Charge
+    simulate!(soly_2, p, 820, I=-0.2) #To remove 10% SOC
+    simulate!(soly_2, p, 3600,  I=:rest) #Hour Rest
+end
+
+V_baseline_2 = soly_2.V
+T_prime_2 = plot(soly_2, :V, title = "HPPC 2C_5C")
+Time_2 = soly_2.t
+
+for i in 1e-10:1e-10:10e-10
+    @time p.θ[:D_s] = i
+    for k in 1:length(i)
+       sol = "Sol_$k "
+       print(sol) 
+       sol = solution()
+       Delta_V = HPPC_2C_5C(i,sol,p,V_baseline_2)
+        Sens_Av = mean((Delta_V/V_baseline_2).*100)
+        Sens_max = maximum((Delta_V/V_baseline_2).*100)
+        Sens_min = minimum((Delta_V/V_baseline_2).*100)
+        Variation = Sens_max - Sens_min
+        scatter!(T3,(i,Sens_Av),xlabel = "m^2s^-1",ylim = (-0.0005,0.0025), ylabel = "Average Variation (%)",  legend = false)
+        scatter!(T4,(i,Variation),xlabel = "m^2s^-1",ylabel = "Delta Variation (%)", legend = false)
+        push!(Sens_Ds_2,Sens_Av)
+        push!(Delta_V_Ds_2,Delta_V )
+        push!(Voltage_Ds_2,resize!(sol.V,length(V_baseline_2)))
+    end
+end
+
+Vx2 = plot(Time_2,Voltage_Ds_2,label = ["1e-10" "2e-10" "3e-10" "4e-10" "5e-10" "6e-10" "7e-10" "8e-10" "9e-10" "1e-9"])
+ylims!(3,4.2)
+xlims!(0, 32000)
+Vx3 = plot(Time_2,Delta_V_Ds_2, label = ["1e-10" "2e-10" "3e-10" "4e-10" "5e-10" "6e-10" "7e-10" "8e-10" "9e-10" "1e-9"])
+ylims!(-0.2,0.2)
+xlims!(0, 32000)
+
+p.θ[:D_s] = return1
+
+#Baseline GITT
+p.θ[:T₀] = p.θ[:T_amb] 
+soly_3 = solution()
+p.opts.outputs = (:t, :V, :I)
+p.opts.SOC = 1
+p.bounds.V_min = 2.5
+p.bounds.V_max = 4.2
+# GITT: 20 1C pulses followed by 2 hour rests
+@time for i in 1:20
+    simulate!(soly_3, p, 720, I=-0.25)
+    simulate!(soly_3, p, 2*3600,  I=:rest)
+end
+
+V_baseline_3 = soly_3.V
+T_prime_3 = plot(soly_3, :V, title = "GITT")
+Time_3 = soly_3.t
+
+
+T5 = scatter(title="Average Sensitivty D_s")
+T6 = scatter(title="Delta Sensitivty D_s")
+return1 = p.θ[:D_s]
+
+Sens_Ds_3 = Float64[]
+Delta_V_Ds_3 = Vector[]
+Voltage_Ds_3 = Vector[]
+
+# Dependency for GITT for D_s
+for i in 1e-10:1e-10:10e-10
+    @time p.θ[:D_s] = i
+    for k in 1:length(i)
+       sol = "Sol_$k "
+       print(sol) 
+       sol = solution()
+       Delta_V = GITT(i,sol,p,V_baseline_3)
+        Sens_Av = mean((Delta_V/V_baseline_3).*100)
+        Sens_max = maximum((Delta_V/V_baseline_3).*100)
+        Sens_min = minimum((Delta_V/V_baseline_3).*100)
+        Variation = Sens_max - Sens_min
+        scatter!(T5,(i,Sens_Av),xlabel = "m^2s^-1", ylabel = "Average Variation (%)",  legend = false)
+        scatter!(T6,(i,Variation),xlabel = "m^2s^-1",ylabel = "Delta Variation (%)", legend = false)
+        push!(Sens_Ds_3,Sens_Av)
+        push!(Delta_V_Ds_3,Delta_V )
+        push!(Voltage_Ds_3,resize!(sol.V,length(V_baseline_3)))
+    end
+end
+
+Vx4 = plot(Time_3,Voltage_Ds_3,label = ["1e-10" "2e-10" "3e-10" "4e-10" "5e-10" "6e-10" "7e-10" "8e-10" "9e-10" "1e-9"])
+ylims!(3,4.2)
+xlims!(0, 2500)
+Vx5 = plot(Time_3,Delta_V_Ds_3, label = ["1e-10" "2e-10" "3e-10" "4e-10" "5e-10" "6e-10" "7e-10" "8e-10" "9e-10" "1e-9"])
+ylims!(-0.2,0.2)
