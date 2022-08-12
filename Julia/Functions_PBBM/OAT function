@@ -1,5 +1,4 @@
 function OAT(case)
-
     if case == 1 #l_p
         variable = p.θ[:l_p]
         lb = 35e-5
@@ -39,3 +38,7 @@ function OAT(case)
     end   
 return variable, lb, step, ub, name
 end
+
+
+
+
