@@ -1,0 +1,39 @@
+function HPPC_2C_5C(i,sol,p,V_baseline_2)
+        p.opts.outputs = (:t, :V, :I)
+        p.opts.SOC = 1
+        p.bounds.V_min = 3
+        p.bounds.V_max = 4.2
+        for j in 1:20
+            simulate!(sol, p, 10, I=-1) #Pulse Discharge
+            simulate!(sol, p, 40, I=:rest) #Relax
+            simulate!(sol, p, 10, I=0.5) #Pulse Charge
+            simulate!(sol, p, 820, I=-0.105) #To remove 10% SOC
+            simulate!(sol, p, 3600,  I=:rest) #Hour Rest
+        end
+        Delta_V = V_baseline_2 - resize!(sol.V,length(V_baseline_2))
+         if maximum(sol.V) > 5
+            Delta_V = - ones(length(V_baseline_2))*1000
+            print("$i is bad")
+        end
+        return Delta_V
+    end
+
+    function HPPC_1C_5C(i,sol,p,V_baseline_1)
+        p.opts.outputs = (:t, :V, :I)
+        p.opts.SOC = 1
+        p.bounds.V_min = 3
+        p.bounds.V_max = 4.2
+        for j in 1:20
+            simulate!(sol, p, 10, I=-5) #Pulse Discharge
+            simulate!(sol, p, 40, I=:rest) #Relax
+            simulate!(sol, p, 10, I=5) #Pulse Charge
+            simulate!(sol, p, 300, I=-1) #To remove 10% SOC
+            simulate!(sol, p, 3600,  I=:rest) #Hour Rest
+        end
+        Delta_V = V_baseline_1 - resize!(sol.V,length(V_baseline_1))
+         if maximum(sol.V) > 5
+            Delta_V = - ones(length(V_baseline_1))*1000
+            print("$i is bad")
+        end
+        return Delta_V
+    end
