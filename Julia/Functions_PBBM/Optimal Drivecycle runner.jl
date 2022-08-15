@@ -57,8 +57,8 @@ case = 6 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n
             @time Delta_V = GITT(i,sol,p,V_baseline_3)[1]
                 Sens_Av = GITT(i,sol,p,V_baseline_3)[2]
                 Variation = GITT(i,sol,p,V_baseline_3)[3]
-                scatter!(T5,(i,Sens_Av),xlabel = "$unit", ylabel = "Average Variation (%)",  legend = false)
-                scatter!(T6,(i,Variation),xlabel = "$unit",ylabel = "Delta Variation (%)", legend = false)
+                scatter!(T5,(i,Sens_Av),xlabel = "$name $unit", ylabel = "Average Variation (%)",  legend = false)
+                scatter!(T6,(i,Variation),xlabel = "$name $unit",ylabel = "Delta Variation (%)", legend = false)
                 push!(Sens_GITT ,Sens_Av)
                 push!(Delta_V_GITT,Delta_V)
                 push!(Voltage_GITT,resize!(sol.V,length(V_baseline_3)))
