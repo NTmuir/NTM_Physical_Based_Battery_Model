@@ -86,7 +86,7 @@ end
 
 df_WLTP = CSV.read("Julia/LGM50 PBBM Validation/210224_LGM50_WLTP3B_25c_Channel_2_Wb_1.CSV", DataFrame)
 
-
+function WLTP_Grab(df_WLTP, Time_4,V_baseline_4,Current_4)
     df_WLTP = filter([:Step_Index] => (Step_Index) -> Step_Index > 8.9 && Step_Index < 10.1,df_WLTP)
 
 
@@ -120,3 +120,4 @@ df_WLTP = CSV.read("Julia/LGM50 PBBM Validation/210224_LGM50_WLTP3B_25c_Channel_
 
     #PETLION Baseline of LGM50 Chen2020
     plot!(WLTP2, Time_4,Current_4, label = "PETLION Measured C-rate")
+    return C_rate, WLTP1, WLTP2
