@@ -10,7 +10,7 @@ temperature = false, # temperature enabled or disabled
 jacobian = :AD, # :AD (automatic-differenation) for convenience or :symbolic for speed
 )
 
-case = 6 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n] p.θ[:l_p]
+case = 1 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n] p.θ[:l_p]
 
             focus = OAT(case)[1]
             lb = OAT(case)[2]
@@ -25,18 +25,18 @@ case = 6 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n
         soly_3 = solution()
         p.opts.outputs = (:t, :V, :I)
         p.opts.SOC = 1
-        p.bounds.V_min = 3
+        p.bounds.V_min = 2.5
         p.bounds.V_max = 4.2
         # GITT: 20 1C pulses followed by 2 hour rests
         @time for i in 1:20
             simulate!(soly_3, p, 720, I=-0.25)
-            simulate!(soly_3, p, 3600,  I=:rest)
+            simulate!(soly_3, p, 4*3600,  I=:rest)
         end
 
         V_baseline_3 = soly_3.V
         T_prime_3 = plot(soly_3, :V, title = "GITT")
         Time_3 = soly_3.t
-
+        Current_3 = soly_3.I
 
         T5 = scatter(title="Average Sensitivty $name GITT")
         T6 = scatter(title="Delta Sensitivty $name GITT")

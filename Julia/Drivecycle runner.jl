@@ -40,6 +40,7 @@ case = 1 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n
         V_baseline_1 = soly.V
         T_prime_1 = plot(soly, :V ,title = "HPPC Aggressive")
         Time_1 = soly.t
+        Current_1 = soly.I
 
         T1 = scatter(title="Average Sensitivty $name HPPC Aggressive")
         T2 = scatter(title="Delta Sensitivty $name HPPC Aggressive")
@@ -95,7 +96,7 @@ case = 1 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n
         V_baseline_2 = soly_2.V
         T_prime_2 = plot(soly_2, :V, title = "HPPC HVES Baseline")
         Time_2 = soly_2.t
-
+        Current_2 = soly_2.I
         T3 = scatter(title="Average Sensitivty $name HPPC")
         T4 = scatter(title="Delta Sensitivty $name HPPC")
 
@@ -148,6 +149,7 @@ case = 1 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n
         V_baseline_3 = soly_3.V
         T_prime_3 = plot(soly_3, :V, title = "GITT")
         Time_3 = soly_3.t
+        Current_3 = soly_3.I
 
 
         T5 = scatter(title="Average Sensitivty $name GITT")
