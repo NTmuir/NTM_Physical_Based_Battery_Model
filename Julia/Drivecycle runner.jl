@@ -1,6 +1,6 @@
 using PETLION, Plots, Statistics, DataFrames
 
-p = petlion(Chen2020;
+p = petlion(LCO;
 N_p = 10, # discretizations in the cathode
 N_s = 10, # discretizations in the separator
 N_n = 10, # discretizations in the anode
@@ -10,7 +10,7 @@ temperature = false, # temperature enabled or disabled
 jacobian = :AD, # :AD (automatic-differenation) for convenience or :symbolic for speed
 )
 
-case = 1 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n] p.θ[:l_p]
+case = 7 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n] p.θ[:l_p]
 
             focus = OAT(case)[1]
             lb = OAT(case)[2]
@@ -23,7 +23,7 @@ case = 1 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n
         soly = solution()
         p.opts.outputs = (:t, :V, :I)
         p.opts.SOC = 1
-        p.bounds.V_min = 3
+        p.bounds.V_min = 2.5
         p.bounds.V_max = 4.2
 
         ## Baseline
@@ -53,7 +53,7 @@ case = 1 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n
 
         #5C HPPC
         @time for i in lb:step:ub
-            p.θ[:l_p] = i
+            p.θ[:T₀] = i
             for k in 1:length(i)
             sol = "Sol_$k "
             sol = solution()
@@ -80,7 +80,7 @@ case = 1 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n
         soly_2 = solution()
         p.opts.outputs = (:t, :V, :I)
         p.opts.SOC = 1
-        p.bounds.V_min = 3
+        p.bounds.V_min = 2.5
         p.bounds.V_max = 4.2
 
         p.θ[:T₀] = p.θ[:T_amb] 
@@ -108,7 +108,7 @@ case = 1 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n
 
          #HVES HPPC
         @time for i in lb:step:ub
-            p.θ[:l_p] = i
+            p.θ[:T₀] = i
             for k in 1:length(i)
             sol = "Sol_$k "
             sol = solution()
@@ -138,7 +138,7 @@ case = 1 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n
         soly_3 = solution()
         p.opts.outputs = (:t, :V, :I)
         p.opts.SOC = 1
-        p.bounds.V_min = 3
+        p.bounds.V_min = 2.5
         p.bounds.V_max = 4.2
         # GITT: 20 1C pulses followed by 2 hour rests
         @time for i in 1:20
@@ -163,7 +163,7 @@ case = 1 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n
 
          # Dependency for GITT
         @time for i in lb:step:ub
-            p.θ[:l_p] = i
+            p.θ[:T₀] = i
             for k in 1:length(i)
             sol = "Sol_$k "
             sol = solution()
@@ -188,6 +188,56 @@ case = 1 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n
 
         @show return1 = focus
 
+        # #Baseline WLTP
+        # p.θ[:T₀] = p.θ[:T_amb] 
+        # soly_4 = solution()
+        # p.opts.outputs = (:t, :V, :I)
+        #     p.opts.SOC = 1
+        #     p.bounds.V_min = 2.5
+        #     p.bounds.V_max = 4.2
+        #     for j in 1:length(Adjusted_Time)
+        #        @time simulate!(soly_4,p,0.5,I =C_rate[j])
+        #     end
+        #     V_baseline_4 = soly_4.V
+        #     T_prime_4 = plot(soly_4,:V, title = "WLTP Baseline")
+        #     Time_4 = soly_4.t
+        #     Current_4 = soly_4.I
+
+        # T7 = scatter(title="Average Sensitivty $name WLTP")
+        # T8 = scatter(title="Delta Sensitivty $name WLTP")
+
+        # @show return1 = focus
+
+        # Sens_WLTP = Float64[]
+        # Delta_V_WLTP = Vector[]
+        # Voltage_WLTP = Vector[]
+
+        #  # Dependency for WLTP
+        # @time for i in lb:step:ub
+        #     p.θ[:T₀] = i
+        #     for k in 1:length(i)
+        #     sol = "Sol_$k "
+        #     sol = solution()
+        #     @time Delta_V = WLTP(i,sol,p,V_baseline_4,C_rate,Adjusted_Time)[1]
+        #         Sens_Av = WLTP(i,sol,p,V_baseline_4,C_rate,Adjusted_Time)[2]
+        #         Variation = WLTP(i,sol,p,V_baseline_4,C_rate,Adjusted_Time)[3]
+        #         scatter!(T7,(i,Sens_Av),xlabel = "$name $unit", ylabel = "Average Variation (%)",  legend = false)
+        #         scatter!(T8,(i,Variation),xlabel = "$name $unit",ylabel = "Delta Variation (%)", legend = false)
+        #         push!(Sens_WLTP ,Sens_Av)
+        #         push!(Delta_V_WLTP,Delta_V)
+        #         push!(Voltage_WLTP,resize!(sol.V,length(V_baseline_4)))
+        #     end
+        # end
+
+        # Vx7 = plot(Time_3,Voltage_WLTP, legend = false, ylabel = "Voltage (V)", xlabel = "Time (s)", title = "WLTP OAT Voltage $name")
+        # ylims!(3,4.2)
+        # xlims!(0, maximum(Time_3))
+        # Vx8 = plot(Time_3,Delta_V_WLTP, legend = false, ylabel = "Delta Voltage (V)", xlabel = "Time (s)", title = "WLTP OAT Delta Voltage $name")
+        # ylims!(-0.5,0.5)
+        # xlims!(0, maximum(Time_3))
+        # print("case $name completed WLTP")
+
+
     #save plots
     png(T1,"Average Sensitivty $name HPPC 5C")
     png(T2,"Delta Sensitivty $name HPPC 5C")
@@ -195,10 +245,14 @@ case = 1 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n
     png(T4,"Delta Sensitivty $name HPPC")
     png(T5,"Average Sensitivty $name GITT")
     png(T6,"Delta Sensitivty $name GITT")
+    png(T7,"Average Sensitivty $name WLTP")
+    png(T8,"Delta Sensitivty $name WLTP")
     png(Vx1,"Voltage $name HPPC 5C")
     png(Vx3,"Voltage $name HPPC")
     png(Vx5,"Voltage $name GITT")
+    
     png(Vx2,"Delta Voltage $name HPPC 5C")
     png(Vx4,"Delta Voltage $name HPPC")
     png(Vx6,"Delta Voltage $name GITT")
+   
 

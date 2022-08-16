@@ -1,10 +1,10 @@
-using CSV, DataFrames, LinearAlgebra, Plots
+using CSV, DataFrames, LinearAlgebra, Plots, Statistics
 
 # Extracting data for GITT
 
 df_GITT = CSV.read("Julia/LGM50 PBBM Validation/210129_LGM50_GITT_Channel_3_Wb_1.CSV", DataFrame)
 
-function GITT_Grab(df_GITT, Time_3,V_baseline_3,Current_3)
+#function GITT_Grab(df_GITT, Time_3,V_baseline_3,Current_3)
 
 
     df_GITT = filter([:Step_Index] => (Step_Index) -> Step_Index > 5 && Step_Index < 9,df)
@@ -41,12 +41,12 @@ function GITT_Grab(df_GITT, Time_3,V_baseline_3,Current_3)
     #PETLION Baseline of LGM50 Chen2020
     plot!(GITT2, Time_3,soly_3.I, label = "PETLION Measured C-rate")
 
-    return GITT1, GITT2
-end
+
 
 df_HPPC = CSV.read("Julia/LGM50 PBBM Validation/210209_LGM50_HPPC_1C_25C_Channel_3_Wb_1.CSV", DataFrame)
 
-function HPPC_grab(df_HPPC, Time_2,V_baseline_2,Current_2)
+
+#function HPPC_grab(df_HPPC, Time_2,V_baseline_2,Current_2)
     df_HPPC = filter([:Step_Index] => (Step_Index) -> Step_Index > 8.9 && Step_Index < 19,df_HPPC)
 
 
@@ -81,12 +81,16 @@ function HPPC_grab(df_HPPC, Time_2,V_baseline_2,Current_2)
     #PETLION Baseline of LGM50 Chen2020
     plot!(HPPC2, Time_2,soly_2.I, label = "PETLION Measured C-rate")
     
-    return HPPC1, HPPC2
-end
+    df_combine_HPPC = DataFrame(A=Adjusted_Time,B =Voltage,C=Time_2,D=V_baseline_2)
+    
+
+    # Stat
+    
+
 
 df_WLTP = CSV.read("Julia/LGM50 PBBM Validation/210224_LGM50_WLTP3B_25c_Channel_2_Wb_1.CSV", DataFrame)
 
-function WLTP_Grab(df_WLTP, Time_4,V_baseline_4,Current_4)
+#WLTP_Grab(df_WLTP, Time_4,V_baseline_4,Current_4)
     df_WLTP = filter([:Step_Index] => (Step_Index) -> Step_Index > 8.9 && Step_Index < 10.1,df_WLTP)
 
 
@@ -116,8 +120,7 @@ function WLTP_Grab(df_WLTP, Time_4,V_baseline_4,Current_4)
     # PETLION Baseline of LGM50 Chen2020
     plot!(WLTP1,Time_4,V_baseline_4, label = "PETLION Measured Voltage")
 
-    WLTP2 = plot(Adjusted_Time,C_rate, label = "WLTP Measured C-rate",xlabel = "Time (s)",ylabel = "C-rate",title = "HPPC Comparsion from HVES to PETLION in C-rate")
+    WLTP2 = plot(Adjusted_Time,C_rate, label = "WLTP Measured C-rate",xlabel = "Time (s)",ylabel = "C-rate",title = "WLTP Comparsion from HVES to PETLION in C-rate")
 
     #PETLION Baseline of LGM50 Chen2020
     plot!(WLTP2, Time_4,Current_4, label = "PETLION Measured C-rate")
-    return C_rate, WLTP1, WLTP2

@@ -33,10 +33,10 @@ function HPPC_HVES(i,sol,p,V_baseline_2)
         p.bounds.V_min = 3
         p.bounds.V_max = 4.2
         for j in 1:20
-            simulate!(sol, p, 10, I=-1) #Pulse Discharge
+            simulate!(sol, p, 10, I=-0.96) #Pulse Discharge
             simulate!(sol, p, 40, I=:rest) #Relax
-            simulate!(sol, p, 10, I=0.5) #Pulse Charge
-            simulate!(sol, p, 820, I=-0.105) #To remove 10% SOC
+            simulate!(sol, p, 10, I=0.76) #Pulse Charge
+            simulate!(sol, p, 820, I=-0.2) #To remove 10% SOC
             simulate!(sol, p, 3600,  I=:rest) #Hour Rest
         end
         Delta_V = V_baseline_2 - resize!(sol.V,length(V_baseline_2))
@@ -74,15 +74,23 @@ function HPPC_HVES(i,sol,p,V_baseline_2)
         return Delta_V, Sens_Av, Variation
     end
 
-    soly_4 = solution()
-    p.opts.outputs = (:t, :V, :I)
+   function WLTP(i,sol,p,V_baseline_4,C_rate,Adjusted_Time)
+        p.opts.outputs = (:t, :V, :I)
         p.opts.SOC = 1
         p.bounds.V_min = 2.5
         p.bounds.V_max = 4.2
-        for j in 1:length(Adjusted_Time)
-           @time simulate!(soly_4,p,0.5,I =C_rate[j])
+            for j in 1:length(Adjusted_Time)
+               @time simulate!(soly_4,p,0.5,I =C_rate[j])
+            end
+            Delta_V = V_baseline_4 - resize!(sol.V,length(V_baseline_4))
+        if maximum(sol.V) > 5 || minimum(sol.V) < 0
+            NAN = zeros(length(V_baseline_4))
+            Delta_V = fill!(NAN,NaN)
+            println("$i is bad")
         end
-        V_baseline_4 = soly_4.V
-        T_prime_4 = plot(soly_4,:V, title = "WLTP Baseline")
-        Time_4 = soly_4.t
-        Current_4 = soly_4.I
+        Sens_Av = mean((Delta_V/V_baseline_4).*100)
+                Sens_max = maximum((Delta_V/V_baseline_4).*100)
+                Sens_min = minimum((Delta_V/V_baseline_4).*100)
+                Variation = Sens_max - Sens_min
+        return Delta_V, Sens_Av, Variation
+    end

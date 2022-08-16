@@ -36,13 +36,20 @@ function OAT(case)
         ub = 5.2e4
         name = "c_max_p"
         unit = "(mol m^-3)"
-    else case == 6 #   
+    elseif case == 6 # ϵ_n  
         variable = p.θ[:ϵ_n]
         lb = 0.2
         step = 0.001
         ub = 0.5 
         name = "ϵ_n"
         unit = "(dimensionless)"
+    else case == 7 #T₀
+        variable = p.θ[:T₀]
+        lb = 233.15
+        step = 1
+        ub = 328.15
+        name = "Temperature"
+        unit = "(K)"
     end   
 return variable, lb, step, ub, name, unit
 end
