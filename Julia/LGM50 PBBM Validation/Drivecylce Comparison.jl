@@ -83,3 +83,40 @@ function HPPC_grab(df_HPPC, Time_2,V_baseline_2,Current_2)
     
     return HPPC1, HPPC2
 end
+
+df_WLTP = CSV.read("Julia/LGM50 PBBM Validation/210224_LGM50_WLTP3B_25c_Channel_2_Wb_1.CSV", DataFrame)
+
+
+    df_WLTP = filter([:Step_Index] => (Step_Index) -> Step_Index > 8.9 && Step_Index < 10.1,df_WLTP)
+
+
+    data_WLTP = Base.Matrix(df_WLTP)
+
+    #Preallocate Data Frames for data_WLTP
+
+    Test_time = data_WLTP[:,3]
+    Start_Test = minimum(Test_time)
+    Finish_Test = maximum(Test_time)
+
+
+    Adjusted_Time = Test_time - Vector{Float64}(Start_Test*ones(length(Test_time)))
+
+
+    Step_time = data_WLTP[:,4]
+    Cycle_Index = data_WLTP[:,5]
+    Step_Index = data_WLTP[:,6]
+    Current = Vector{Float64}(data_WLTP[:,9])
+    Voltage = data_WLTP[:,10]
+    C_rate = Current ./ 5 #~5Ah for LGM50
+
+    #Comparison Plot of LGM50 Vs PETLION
+
+    WLTP1 = plot(Adjusted_Time,Voltage, label = "WLTP Measured Voltage",xlabel = "Time (s)",ylabel = "Voltage (V)",title = "WLTP Comparsion from HVES to PETLION in Voltage")
+
+    # PETLION Baseline of LGM50 Chen2020
+    plot!(WLTP1,Time_4,V_baseline_4, label = "PETLION Measured Voltage")
+
+    WLTP2 = plot(Adjusted_Time,C_rate, label = "WLTP Measured C-rate",xlabel = "Time (s)",ylabel = "C-rate",title = "HPPC Comparsion from HVES to PETLION in C-rate")
+
+    #PETLION Baseline of LGM50 Chen2020
+    plot!(WLTP2, Time_4,Current_4, label = "PETLION Measured C-rate")
