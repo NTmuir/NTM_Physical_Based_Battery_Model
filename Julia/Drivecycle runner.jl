@@ -1,6 +1,6 @@
 using PETLION, Plots, Statistics, DataFrames
 
-p = petlion(LCO;
+p = petlion(Chen2020;
 N_p = 10, # discretizations in the cathode
 N_s = 10, # discretizations in the separator
 N_n = 10, # discretizations in the anode
@@ -143,7 +143,7 @@ case = 7 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n
         # GITT: 20 1C pulses followed by 2 hour rests
         @time for i in 1:20
             simulate!(soly_3, p, 720, I=-0.25)
-            simulate!(soly_3, p, 3600,  I=:rest)
+            simulate!(soly_3, p, 4*3600,  I=:rest)
         end
 
         V_baseline_3 = soly_3.V
@@ -188,20 +188,20 @@ case = 7 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n
 
         @show return1 = focus
 
-        # #Baseline WLTP
-        # p.θ[:T₀] = p.θ[:T_amb] 
-        # soly_4 = solution()
-        # p.opts.outputs = (:t, :V, :I)
-        #     p.opts.SOC = 1
-        #     p.bounds.V_min = 2.5
-        #     p.bounds.V_max = 4.2
-        #     for j in 1:length(Adjusted_Time)
-        #        @time simulate!(soly_4,p,0.5,I =C_rate[j])
-        #     end
-        #     V_baseline_4 = soly_4.V
-        #     T_prime_4 = plot(soly_4,:V, title = "WLTP Baseline")
-        #     Time_4 = soly_4.t
-        #     Current_4 = soly_4.I
+        #Baseline WLTP
+         p.θ[:T₀] = p.θ[:T_amb] 
+        soly_4 = solution()
+        p.opts.outputs = (:t, :V, :I)
+            p.opts.SOC = 1
+            p.bounds.V_min = 2.5
+          p.bounds.V_max = 4.2
+          for j in 1:length(Adjusted_Time_WLTP)
+              @time simulate!(soly_4,p,0.5,I =C_rate_WLTP[j])
+           end
+            V_baseline_4 = soly_4.V
+           T_prime_4 = plot(soly_4,:V, title = "WLTP Baseline")
+            Time_4 = soly_4.t
+            Current_4 = soly_4.I
 
         # T7 = scatter(title="Average Sensitivty $name WLTP")
         # T8 = scatter(title="Delta Sensitivty $name WLTP")

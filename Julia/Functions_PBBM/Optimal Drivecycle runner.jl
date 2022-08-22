@@ -1,4 +1,4 @@
-using PETLION, Plots, Statistics, DataFrames
+using PETLION, Plots, Statistics, DataFrames, .Search , .Drivecycles
 
 p = petlion(Chen2020;
 N_p = 10, # discretizations in the cathode
