@@ -1,16 +1,16 @@
 using PETLION, Plots, Statistics, DataFrames
 
-p = petlion(Chen2020;
+p = petlion(LCO;
 N_p = 10, # discretizations in the cathode
 N_s = 10, # discretizations in the separator
 N_n = 10, # discretizations in the anode
 N_r_p = 10, # discretizations in the solid cathode particles
 N_r_n = 10, # discretizations in the solid anode particles
-temperature = false, # temperature enabled or disabled
+temperature = true, # temperature enabled or disabled
 jacobian = :AD, # :AD (automatic-differenation) for convenience or :symbolic for speed
 )
 
-case = 7 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n] p.θ[:l_p]
+case = 8 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n] p.θ[:l_p]
 
             focus = OAT(case)[1]
             lb = OAT(case)[2]
@@ -27,7 +27,7 @@ case = 7 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n
         p.bounds.V_max = 4.2
 
         ## Baseline
-        p.θ[:T₀] = p.θ[:T_amb] 
+          p.θ[:T_amb] = focus
         # HPPC: 20 5C pulses followed by 1 hour rests
         @time for i in 1:9
             simulate!(soly, p, 10, I=-3) #Pulse Discharge
@@ -53,7 +53,7 @@ case = 7 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n
 
         #5C HPPC
         @time for i in lb:step:ub
-            p.θ[:T₀] = i
+            p.θ[:T_amb] = i
             for k in 1:length(i)
             sol = "Sol_$k "
             sol = solution()
@@ -83,7 +83,7 @@ case = 7 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n
         p.bounds.V_min = 2.5
         p.bounds.V_max = 4.2
 
-        p.θ[:T₀] = p.θ[:T_amb] 
+        p.θ[:T_amb] = focus
         # HPPC: 20 5C pulses followed by 1 hour rests
         @time for i in 1:20
             simulate!(soly_2, p, 10, I=-0.96) #Pulse Discharge
@@ -108,7 +108,7 @@ case = 7 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n
 
          #HVES HPPC
         @time for i in lb:step:ub
-            p.θ[:T₀] = i
+            p.θ[:T_amb] = i
             for k in 1:length(i)
             sol = "Sol_$k "
             sol = solution()
@@ -134,7 +134,7 @@ case = 7 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n
         @show focus = return1
 
         #Baseline GITT
-        p.θ[:T₀] = p.θ[:T_amb] 
+        p.θ[:T_amb] = focus
         soly_3 = solution()
         p.opts.outputs = (:t, :V, :I)
         p.opts.SOC = 1
@@ -163,7 +163,7 @@ case = 7 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n
 
          # Dependency for GITT
         @time for i in lb:step:ub
-            p.θ[:T₀] = i
+            p.θ[:T_amb] = i
             for k in 1:length(i)
             sol = "Sol_$k "
             sol = solution()
@@ -187,21 +187,6 @@ case = 7 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n
         print("case $name completed GITT")
 
         @show return1 = focus
-
-        #Baseline WLTP
-         p.θ[:T₀] = p.θ[:T_amb] 
-        soly_4 = solution()
-        p.opts.outputs = (:t, :V, :I)
-            p.opts.SOC = 1
-            p.bounds.V_min = 2.5
-          p.bounds.V_max = 4.2
-          for j in 1:length(Adjusted_Time_WLTP)
-              @time simulate!(soly_4,p,0.5,I =C_rate_WLTP[j])
-           end
-            V_baseline_4 = soly_4.V
-           T_prime_4 = plot(soly_4,:V, title = "WLTP Baseline")
-            Time_4 = soly_4.t
-            Current_4 = soly_4.I
 
         # T7 = scatter(title="Average Sensitivty $name WLTP")
         # T8 = scatter(title="Delta Sensitivty $name WLTP")
@@ -245,8 +230,6 @@ case = 7 # p.θ[:l_p] p.θ[:ϵ_p] p.θ[:k_n] p.θ[c_max_p] p.θ[:ϵ_n] p.θ[:l_n
     png(T4,"Delta Sensitivty $name HPPC")
     png(T5,"Average Sensitivty $name GITT")
     png(T6,"Delta Sensitivty $name GITT")
-    png(T7,"Average Sensitivty $name WLTP")
-    png(T8,"Delta Sensitivty $name WLTP")
     png(Vx1,"Voltage $name HPPC 5C")
     png(Vx3,"Voltage $name HPPC")
     png(Vx5,"Voltage $name GITT")

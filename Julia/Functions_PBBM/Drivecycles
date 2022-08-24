@@ -95,23 +95,27 @@ function HPPC_HVES(i,sol,p,V_baseline_2)
         return Delta_V, Sens_Av, Variation
     end
 
-    function GITT_AI(i,sol,p,)
+    function GITT_AI(i,sol,p,V_baseline_3)
         p.opts.outputs = (:t, :V, :I)
         p.opts.SOC = 1
         p.bounds.V_min = 2.5
         p.bounds.V_max = 4.2
-        
-        for j in 1:20
-            simulate!(sol, p, 720, I=-0.25)
-            simulate!(sol, p, 4*3600,  I=:rest)
+        Delta_V = V_baseline_3 - resize!(sol.V,length(V_baseline_3))
+        for j in 1:2
+            simulate!(sol, p, 50, I=-0.25)
         end
         
-        if maximum(sol.V) > 5 || minimum(sol.V) < 0
-            NAN = zeros(length(V_baseline_4))
-            sol = fill!(NAN,NaN)
-            println("$i is bad")
-        end
-        return sol
+        #if maximum(sol.V) > 5 || minimum(sol.V) < 0
+            #NAN = zeros(length(V_baseline_4))
+            #sol = fill!(NAN,NaN)
+            #println("$i is bad")
+        #end
+        
+            Sens_Av = mean((Delta_V/V_baseline_1).*100)
+                Sens_max = maximum((Delta_V/V_baseline_3).*100)
+                Sens_min = minimum((Delta_V/V_baseline_3).*100)
+                Variation = Sens_max - Sens_min
+        return Delta_V, Sens_Av, Variation
     end
 
 

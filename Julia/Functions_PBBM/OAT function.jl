@@ -44,14 +44,22 @@ module Search
             ub = 0.5 
             name = "ϵ_n"
             unit = "(dimensionless)"
-        else case == 7 #T₀
+        elseif case == 7 #T₀
             variable = p.θ[:T₀]
             lb = 233.15
             step = 1
             ub = 328.15
             name = "Temperature"
             unit = "(K)"
-        end   
+        else case == 8 #T₀
+        variable = p.θ[:T_amb]
+        lb = 233.15
+        step = 1
+        ub = 328.15
+        name = "Ambient Temperature"
+        unit = "(K)"
+    
+    end     
     return variable, lb, step, ub, name, unit
     end
 end
