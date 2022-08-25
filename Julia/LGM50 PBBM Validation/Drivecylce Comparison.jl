@@ -41,7 +41,14 @@ df_GITT = CSV.read("Julia/LGM50 PBBM Validation/210129_LGM50_GITT_Channel_3_Wb_1
     #PETLION Baseline of LGM50 Chen2020
     plot!(GITT2, Time_3,soly_3.I, label = "PETLION Measured C-rate")
 
-    df_final_GITT = DataFrame(Adjusted_Time_GITT = [Adjusted_Time_GITT],Voltage_GITT = [Voltage_GITT],PETLION_Time=[Time_3],PETLION_Voltage = [V_baseline_3])
+    #Fill arrays with NaN to post process
+    
+    Array_Adjust = zeros(abs(length(Adjusted_Time_GITT)-length(Time_3)))
+    Array_Adjust_NAN = fill!(Array_Adjust,NaN)
+    PETLION_Time_GITT = append!(Time_3,Array_Adjust_NAN)
+    PETLION_Voltage_GITT = append!(V_baseline_3,Array_Adjust_NAN)
+
+    df_final_GITT = DataFrame(Adjusted_Time_GITT = Adjusted_Time_GITT,Voltage_GITT = Voltage_GITT,PETLION_Time= PETLION_Time_GITT,PETLION_Voltage = PETLION_Voltage_GITT)
 
     CSV.write("Julia/LGM50 PBBM Validation/CSV Exports/GITT.csv",df_final_GITT)
 
@@ -84,8 +91,14 @@ df_HPPC = CSV.read("Julia/LGM50 PBBM Validation/210209_LGM50_HPPC_1C_25C_Channel
 
     #PETLION Baseline of LGM50 Chen2020
     plot!(HPPC2, Time_2,soly_2.I, label = "PETLION Measured C-rate")
-    
-    df_final_HPPC = DataFrame(Adjusted_Time_HPPC = [Adjusted_Time_HPPC],Voltage_HPPC = [Voltage_HPPC],PETLION_Time=[Time_2],PETLION_Voltage = [V_baseline_2])
+
+    #Fill arrays with NaN to post process
+
+    Array_Adjust = zeros(length(Adjusted_Time_HPPC)-length(Time_2))
+    Array_Adjust_NAN = fill!(Array_Adjust,NaN)
+    PETLION_Time_HPPC = append!(Time_2 ,Array_Adjust_NAN)
+    PETLION_Voltage_HPPC = append!(V_baseline_2 ,Array_Adjust_NAN)
+    df_final_HPPC = DataFrame(Adjusted_Time_HPPC = Adjusted_Time_HPPC,Voltage_HPPC = Voltage_HPPC,PETLION_Time=PETLION_Time_HPPC,PETLION_Voltage = V_baseline_2)
 
     CSV.write("Julia/LGM50 PBBM Validation/CSV Exports/HPPC.csv",df_final_HPPC)
     
@@ -117,7 +130,7 @@ df_WLTP = CSV.read("Julia/LGM50 PBBM Validation/210224_LGM50_WLTP3B_25c_Channel_
     Cycle_Index = data_WLTP[:,5]
     Step_Index = data_WLTP[:,6]
     Current_WLTP = Vector{Float64}(data_WLTP[:,9])
-    Voltage_WLTP = data_WLTP[:,10]
+    Voltage_WLTP = Vector{Float64}(data_WLTP[:,10])
     C_rate_WLTP = Current_WLTP ./ 5 #~5Ah for LGM50
 
     #Comparison Plot of LGM50 Vs PETLION
@@ -132,6 +145,13 @@ df_WLTP = CSV.read("Julia/LGM50 PBBM Validation/210224_LGM50_WLTP3B_25c_Channel_
     #PETLION Baseline of LGM50 Chen2020
     plot!(WLTP2, Time_4,Current_4, label = "PETLION Measured C-rate")
 
-    df_final_WLTP = DataFrame(Adjusted_Time_WLTP = [Adjusted_Time_WLTP],Voltage_WLTP = [Voltage_WLTP],PETLION_Time=[Time_4],PETLION_Voltage = [V_baseline_4])
+    #Fill arrays with NaN to post process
+    
+    Array_Adjust = zeros(abs(length(Adjusted_Time_WLTP)-length(Time_4)))
+    Array_Adjust_NAN = fill!(Array_Adjust,NaN)
+    HVES_Time_WLTP = append!(Adjusted_Time_WLTP,Array_Adjust_NAN)
+    HVES_Voltage_WLTP = append!(Voltage_WLTP,Array_Adjust_NAN)
+
+    df_final_WLTP = DataFrame(Adjusted_Time_WLTP=HVES_Time_WLTP,Voltage_WLTP=HVES_Voltage_WLTP,PETLION_TIME = Time_4,PETLION_Voltage =V_baseline_4)
 
     CSV.write("Julia/LGM50 PBBM Validation/CSV Exports/WLTP.csv",df_final_WLTP)
