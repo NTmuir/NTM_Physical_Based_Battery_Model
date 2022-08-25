@@ -41,14 +41,24 @@ df_GITT = CSV.read("Julia/LGM50 PBBM Validation/210129_LGM50_GITT_Channel_3_Wb_1
     #PETLION Baseline of LGM50 Chen2020
     plot!(GITT2, Time_3,soly_3.I, label = "PETLION Measured C-rate")
 
-    #Fill arrays with NaN to post process
-    
-    Array_Adjust = zeros(abs(length(Adjusted_Time_GITT)-length(Time_3)))
-    Array_Adjust_NAN = fill!(Array_Adjust,NaN)
-    PETLION_Time_GITT = append!(Time_3,Array_Adjust_NAN)
-    PETLION_Voltage_GITT = append!(V_baseline_3,Array_Adjust_NAN)
+    #Data conditioning 
 
-    df_final_GITT = DataFrame(Adjusted_Time_GITT = Adjusted_Time_GITT,Voltage_GITT = Voltage_GITT,PETLION_Time= PETLION_Time_GITT,PETLION_Voltage = PETLION_Voltage_GITT)
+    Smooth_time_PETLION_GITT = round.(Time_3)
+    Smooth_time_HVES_GITT = round.(Adjusted_Time_GITT)
+    
+    #Fill arrays with NaN to post process
+
+    Array_Adjust = zeros(length(Adjusted_Time_GITT)-length(Time_3))
+    Array_Adjust_NAN = fill!(Array_Adjust,1e11)
+    PETLION_Time_GITT = append!(Smooth_time_PETLION_GITT ,Array_Adjust_NAN)
+    PETLION_Voltage_GITT = append!(V_baseline_3 ,Array_Adjust_NAN)
+    df_final_GITT_1 = DataFrame(Adjusted_Time_GITT = Smooth_time_HVES_GITT,Voltage_GITT = Voltage_GITT)
+    df_final_GITT_2 = DataFrame(Adjusted_Time_GITT =Smooth_time_PETLION_GITT,PETLION_Voltage = V_baseline_3)
+
+    df_final_GITT = dropmissing(leftjoin(df_final_GITT_1,df_final_GITT_2, on= :Adjusted_Time_GITT))
+
+    plot(df_final_GITT.Adjusted_Time_GITT,df_final_GITT.Voltage_GITT)
+    plot!(df_final_GITT.Adjusted_Time_GITT,df_final_GITT.PETLION_Voltage)
 
     CSV.write("Julia/LGM50 PBBM Validation/CSV Exports/GITT.csv",df_final_GITT)
 
@@ -92,13 +102,25 @@ df_HPPC = CSV.read("Julia/LGM50 PBBM Validation/210209_LGM50_HPPC_1C_25C_Channel
     #PETLION Baseline of LGM50 Chen2020
     plot!(HPPC2, Time_2,soly_2.I, label = "PETLION Measured C-rate")
 
+    #Data conditioning 
+
+    Smooth_time_PETLION_HPPC = round.(Time_2)
+    Smooth_time_HVES_HPPC = round.(Adjusted_Time_HPPC)
+    
     #Fill arrays with NaN to post process
 
     Array_Adjust = zeros(length(Adjusted_Time_HPPC)-length(Time_2))
-    Array_Adjust_NAN = fill!(Array_Adjust,NaN)
-    PETLION_Time_HPPC = append!(Time_2 ,Array_Adjust_NAN)
+    Array_Adjust_NAN = fill!(Array_Adjust,1e11)
+    PETLION_Time_HPPC = append!(Smooth_time_PETLION_HPPC ,Array_Adjust_NAN)
     PETLION_Voltage_HPPC = append!(V_baseline_2 ,Array_Adjust_NAN)
-    df_final_HPPC = DataFrame(Adjusted_Time_HPPC = Adjusted_Time_HPPC,Voltage_HPPC = Voltage_HPPC,PETLION_Time=PETLION_Time_HPPC,PETLION_Voltage = V_baseline_2)
+    df_final_HPPC_1 = DataFrame(Adjusted_Time_HPPC = Smooth_time_HVES_HPPC,Voltage_HPPC = Voltage_HPPC)
+    df_final_HPPC_2 = DataFrame(Adjusted_Time_HPPC=Smooth_time_PETLION_HPPC,PETLION_Voltage = V_baseline_2)
+
+    df_final_HPPC = dropmissing(leftjoin(df_final_HPPC_1,df_final_HPPC_2, on= :Adjusted_Time_HPPC))
+
+    plot(df_final_HPPC.Adjusted_Time_HPPC,df_final_HPPC.Voltage_HPPC)
+    plot!(df_final_HPPC.Adjusted_Time_HPPC,df_final_HPPC.PETLION_Voltage)
+
 
     CSV.write("Julia/LGM50 PBBM Validation/CSV Exports/HPPC.csv",df_final_HPPC)
     
@@ -145,13 +167,24 @@ df_WLTP = CSV.read("Julia/LGM50 PBBM Validation/210224_LGM50_WLTP3B_25c_Channel_
     #PETLION Baseline of LGM50 Chen2020
     plot!(WLTP2, Time_4,Current_4, label = "PETLION Measured C-rate")
 
-    #Fill arrays with NaN to post process
-    
-    Array_Adjust = zeros(abs(length(Adjusted_Time_WLTP)-length(Time_4)))
-    Array_Adjust_NAN = fill!(Array_Adjust,NaN)
-    HVES_Time_WLTP = append!(Adjusted_Time_WLTP,Array_Adjust_NAN)
-    HVES_Voltage_WLTP = append!(Voltage_WLTP,Array_Adjust_NAN)
+    #Data Conditioning 
 
-    df_final_WLTP = DataFrame(Adjusted_Time_WLTP=HVES_Time_WLTP,Voltage_WLTP=HVES_Voltage_WLTP,PETLION_TIME = Time_4,PETLION_Voltage =V_baseline_4)
+    Smooth_time_PETLION_WLTP = round.(Time_4)
+    Smooth_time_HVES_WLTP = round.(Adjusted_Time_WLTP)
+    
+    #Fill arrays with NaN to post process
+
+    Array_Adjust = zeros(abs(length(Adjusted_Time_WLTP)-length(Time_4)))
+    Array_Adjust_NAN = fill!(Array_Adjust,1e11)
+    HVES_Time_WLTP = append!(Smooth_time_HVES_WLTP ,Array_Adjust_NAN) #HVES is smaller than PETLION
+    HVES_Voltage_WLTP = append!(Voltage_WLTP,Array_Adjust_NAN)
+    df_final_WLTP_1 = DataFrame(Adjusted_Time_WLTP = Smooth_time_HVES_WLTP,Voltage_WLTP = HVES_Voltage_WLTP)
+    df_final_WLTP_2 = DataFrame(Adjusted_Time_WLTP =Smooth_time_PETLION_WLTP,PETLION_Voltage = V_baseline_4)
+
+    df_final_WLTP = dropmissing(leftjoin(df_final_WLTP_1,df_final_WLTP_2, on= :Adjusted_Time_WLTP))
+
+    plot(df_final_WLTP.Adjusted_Time_WLTP,df_final_WLTP.Voltage_WLTP)
+    plot!(df_final_WLTP.Adjusted_Time_WLTP,df_final_WLTP.PETLION_Voltage)
+
 
     CSV.write("Julia/LGM50 PBBM Validation/CSV Exports/WLTP.csv",df_final_WLTP)

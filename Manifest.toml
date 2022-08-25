@@ -1410,6 +1410,12 @@ git-tree-sha1 = "f8629df51cab659d70d2e5618a430b4d3f37f2c3"
 uuid = "8290d209-cae3-49c0-8002-c8c24d57dab5"
 version = "0.5.0"
 
+[[TimeSeries]]
+deps = ["Dates", "DelimitedFiles", "DocStringExtensions", "RecipesBase", "Reexport", "Statistics", "Tables"]
+git-tree-sha1 = "3c91141a9f2276c37c3b6bc2bd83e652d50fecbc"
+uuid = "9e3dc215-6440-5c97-bce1-76c03772f85e"
+version = "0.23.0"
+
 [[TimerOutputs]]
 deps = ["ExprTools", "Printf"]
 git-tree-sha1 = "464d64b2510a25e6efe410e7edab14fffdc333df"
