@@ -92,3 +92,18 @@ jacobian = :AD, # :AD (automatic-differenation) for convenience or :symbolic for
             Time_4 = soly_4.t
             Current_4 = soly_4.I  
 
+        #Standard CC-CV 
+        p.θ[:T₀] = p.θ[:T_amb] 
+        soly_5 = solution()
+        p.opts.SOC = 1
+        p.bounds.V_min = 2.5
+        p.opts.outputs = (:t, :V, :I)
+        for j in 1:length(Adjusted_Time_CCCV)
+            @time simulate!(soly_5,p,1,I=C_rate_CCCV[j])
+            println(j)
+         end
+        V_baseline_5 = soly_5.V
+        T_prime_5 = plot(soly_5,:V, title = "WLTP Baseline")
+        Time_5 = soly_5.t
+        Current_5 = soly_5.I  
+        

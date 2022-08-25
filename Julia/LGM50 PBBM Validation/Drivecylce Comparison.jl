@@ -188,3 +188,66 @@ df_WLTP = CSV.read("Julia/LGM50 PBBM Validation/210224_LGM50_WLTP3B_25c_Channel_
 
 
     CSV.write("Julia/LGM50 PBBM Validation/CSV Exports/WLTP.csv",df_final_WLTP)
+
+    #CC-CV
+
+    df_CCCV = CSV.read("Julia/LGM50 PBBM Validation/201204-LGM50-Conditioning-Charge+Discharge_Cycle2_Channel_1_Wb_1.CSV", DataFrame)
+
+
+    df_CCCV = filter([:Step_Index] => (Step_Index) -> Step_Index > 5.9 && Step_Index < 7.1,df_CCCV)
+
+
+    data_CCCV = Base.Matrix(df_CCCV)
+
+    #Preallocate Data Frames for data_CCCV
+
+    Test_time = data_CCCV[:,3]
+    Start_Test = minimum(Test_time)
+    Finish_Test = maximum(Test_time)
+
+
+    Adjusted_Time_CCCV = Test_time - Vector{Float64}(Start_Test*ones(length(Test_time)))
+
+
+    Step_time = data_CCCV[:,4]
+    Cycle_Index = data_CCCV[:,5]
+    Step_Index = data_CCCV[:,6]
+    Current_CCCV = Vector{Float64}(data_CCCV[:,7])
+    Voltage_CCCV = Vector{Float64}(data_CCCV[:,8])
+    C_rate_CCCV = Current_CCCV ./ 5 #~5Ah for LGM50
+
+    #Comparison Plot of LGM50 Vs PETLION
+
+    CCCV1 = plot(Adjusted_Time_CCCV,Voltage_CCCV, label = "CCCV Measured Voltage",xlabel = "Time (s)",ylabel = "Voltage (V)",title = "CCCV Comparsion from HVES to PETLION in Voltage")
+
+    # PETLION Baseline of LGM50 Chen2020
+    plot!(CCCV1,Time_5,V_baseline_5, label = "PETLION Measured Voltage")
+
+    CCCV2 = plot(Adjusted_Time_CCCV,C_rate_CCCV, label = "CCCV Measured C-rate",xlabel = "Time (s)",ylabel = "C-rate",title = "CCCV Comparsion from HVES to PETLION in C-rate")
+
+    #PETLION Baseline of LGM50 Chen2020
+    plot!(CCCV2, Time_5,Current_5, label = "PETLION Measured C-rate")
+
+    #Data Conditioning 
+
+    Smooth_time_PETLION_CCCV = round.(Time_5)
+    Smooth_time_HVES_CCCV = round.(Adjusted_Time_CCCV)
+    
+    #Fill arrays with NaN to post process
+
+    Array_Adjust = zeros(abs(length(Adjusted_Time_CCCV)-length(Time_5)))
+    Array_Adjust_NAN = fill!(Array_Adjust,1e11)
+    HVES_Time_CCCV = append!(Smooth_time_HVES_CCCV ,Array_Adjust_NAN) #HVES is smaller than PETLION
+    HVES_Voltage_CCCV = append!(Voltage_CCCV,Array_Adjust_NAN)
+    df_final_CCCV_1 = DataFrame(Adjusted_Time_CCCV = Smooth_time_HVES_CCCV,Voltage_CCCV = HVES_Voltage_CCCV)
+    df_final_CCCV_2 = DataFrame(Adjusted_Time_CCCV =Smooth_time_PETLION_CCCV,PETLION_Voltage = V_baseline_5)
+
+    df_final_CCCV = dropmissing(leftjoin(df_final_CCCV_1,df_final_CCCV_2, on= :Adjusted_Time_CCCV))
+
+    plot(df_final_CCCV.Adjusted_Time_CCCV,df_final_CCCV.Voltage_CCCV)
+    plot!(df_final_CCCV.Adjusted_Time_CCCV,df_final_CCCV.PETLION_Voltage)
+
+
+    CSV.write("Julia/LGM50 PBBM Validation/CSV Exports/CCCV.csv",df_final_CCCV)
+
+
