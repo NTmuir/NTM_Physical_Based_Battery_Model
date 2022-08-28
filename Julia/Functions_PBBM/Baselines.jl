@@ -7,7 +7,7 @@ N_n = 10, # discretizations in the anode
 N_r_p = 10, # discretizations in the solid cathode particles
 N_r_n = 10, # discretizations in the solid anode particles
 temperature = false, # temperature enabled or disabled
-jacobian = :symbolic, # :AD (automatic-differenation) for convenience or :symbolic for speed
+jacobian = :AD, # :AD (automatic-differenation) for convenience or :symbolic for speed
 )
 
         # Load the solution structure with an initial SOC of 1

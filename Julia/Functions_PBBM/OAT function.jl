@@ -4,9 +4,9 @@ module Search
 
         if case == 1 #l_p
             variable = p.θ[:l_p]
-            lb = 35e-5
-            step = 1e-5
-            ub = 79e-5
+            lb = 6e-5
+            step = 1e-6
+            ub = 20e-5
             name = "l_p"
             unit = "(m)"
         elseif case == 2 #ϵ_p
@@ -33,7 +33,7 @@ module Search
         elseif case ==5  #c_max_p   
             variable = p.θ[:c_max_p]
             lb = 4.8e4
-            step = 100
+            step = 10
             ub = 5.2e4
             name = "c_max_p"
             unit = "(mol m^-3)"
@@ -52,13 +52,12 @@ module Search
             name = "Temperature"
             unit = "(K)"
         else case == 8 #T₀
-        variable = p.θ[:T_amb]
-        lb = 233.15
-        step = 1
-        ub = 328.15
-        name = "Ambient Temperature"
-        unit = "(K)"
-    
+            variable = p.θ[:T_amb]
+            lb = 233.15
+            step = 40
+            ub = 328.15
+            name = "Ambient Temperature"
+            unit = "(K)"
     end     
     return variable, lb, step, ub, name, unit
     end

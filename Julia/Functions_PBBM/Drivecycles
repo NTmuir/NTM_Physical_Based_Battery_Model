@@ -3,6 +3,7 @@ module Drivecycles
 export HPPC_HVES, HPPC_5C, GITT
 
 function HPPC_5C(i,sol,p,V_baseline_1)
+
     p.opts.outputs = (:t, :V, :I)
     p.opts.SOC = 1
     p.bounds.V_min = 3
@@ -20,11 +21,12 @@ function HPPC_5C(i,sol,p,V_baseline_1)
         Delta_V = fill!(NAN,NaN)
         println("$i is bad")
     end
+    RMSE =  sqrt(sum((Delta_V[i]^2) / length(Delta_V[i])))
             Sens_Av = mean((Delta_V/V_baseline_1).*100)
             Sens_max = maximum((Delta_V/V_baseline_1).*100)
             Sens_min = minimum((Delta_V/V_baseline_1).*100)
             Variation = Sens_max - Sens_min
-    return Delta_V, Sens_Av, Variation
+    return Delta_V, Sens_Av, Variation,RMSE
 end
 
 function HPPC_HVES(i,sol,p,V_baseline_2)
@@ -45,11 +47,12 @@ function HPPC_HVES(i,sol,p,V_baseline_2)
             Delta_V = fill!(NAN,NaN)
             println("$i is bad")
         end
+        RMSE =  sqrt(sum((Delta_V[i]^2) / length(Delta_V[i])))
                 Sens_Av = mean((Delta_V/V_baseline_2).*100)
                 Sens_max = maximum((Delta_V/V_baseline_2).*100)
                 Sens_min = minimum((Delta_V/V_baseline_2).*100)
                 Variation = Sens_max - Sens_min
-        return Delta_V, Sens_Av, Variation
+        return Delta_V, Sens_Av, Variation, RMSE
     end
 
     function GITT(i,sol,p,V_baseline_3)
@@ -67,20 +70,21 @@ function HPPC_HVES(i,sol,p,V_baseline_2)
             Delta_V = fill!(NAN,NaN)
             println("$i is bad")
         end
-        Sens_Av = mean((Delta_V/V_baseline_1).*100)
+        RMSE = sqrt(sum((Delta_V[i]^2) / length(Delta_V[i])))
+        Sens_Av = mean((Delta_V/V_baseline_3).*100)
                 Sens_max = maximum((Delta_V/V_baseline_3).*100)
                 Sens_min = minimum((Delta_V/V_baseline_3).*100)
                 Variation = Sens_max - Sens_min
-        return Delta_V, Sens_Av, Variation
+        return Delta_V, Sens_Av, Variation,RMSE
     end
 
-   function WLTP(i,sol,p,V_baseline_4,C_rate,Adjusted_Time)
+   function WLTP(i,sol,p,V_baseline_4,C_rate_WLTP,Adjusted_Time_WLTP)
         p.opts.outputs = (:t, :V, :I)
         p.opts.SOC = 1
         p.bounds.V_min = 2.5
         p.bounds.V_max = 4.2
-            for j in 1:length(Adjusted_Time)
-               @time simulate!(soly_4,p,0.5,I =C_rate[j])
+            for j in 1:length(Adjusted_Time_WLTP)
+               @time simulate!(soly_4,p,0.5,I =C_rate_WLTP[j])
             end
             Delta_V = V_baseline_4 - resize!(sol.V,length(V_baseline_4))
         if maximum(sol.V) > 5 || minimum(sol.V) < 0
@@ -88,11 +92,12 @@ function HPPC_HVES(i,sol,p,V_baseline_2)
             sol.V = fill!(NAN,NaN)
             println("$i is bad")
         end
+        RMSE =  sqrt(sum((Delta_V[i]^2) / length(Delta_V[i])))
         Sens_Av = mean((Delta_V/V_baseline_4).*100)
                 Sens_max = maximum((Delta_V/V_baseline_4).*100)
                 Sens_min = minimum((Delta_V/V_baseline_4).*100)
                 Variation = Sens_max - Sens_min
-        return Delta_V, Sens_Av, Variation
+        return Delta_V, Sens_Av, Variation,RMSE
     end
 
     function GITT_AI(i,sol,p,V_baseline_3)
