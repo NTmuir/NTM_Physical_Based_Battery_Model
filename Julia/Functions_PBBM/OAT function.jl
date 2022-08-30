@@ -47,14 +47,14 @@ module Search
         elseif case == 7 #T₀
             variable = p.θ[:T₀]
             lb = 233.15
-            step = 1
+            step = 2
             ub = 328.15
             name = "Temperature"
             unit = "(K)"
         else case == 8 #T₀
             variable = p.θ[:T_amb]
             lb = 233.15
-            step = 40
+            step = 10
             ub = 328.15
             name = "Ambient Temperature"
             unit = "(K)"

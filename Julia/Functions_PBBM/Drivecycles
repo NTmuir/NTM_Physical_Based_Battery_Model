@@ -83,8 +83,8 @@ function HPPC_HVES(i,sol,p,V_baseline_2)
         p.opts.SOC = 1
         p.bounds.V_min = 2.5
         p.bounds.V_max = 4.2
-            for j in 1:length(Adjusted_Time_WLTP)
-               @time simulate!(soly_4,p,0.5,I =C_rate_WLTP[j])
+            for j in 1:10
+               @time simulate!(sol,p,0.5,I= C_rate_WLTP[1])
             end
             Delta_V = V_baseline_4 - resize!(sol.V,length(V_baseline_4))
         if maximum(sol.V) > 5 || minimum(sol.V) < 0

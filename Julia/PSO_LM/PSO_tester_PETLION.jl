@@ -26,8 +26,9 @@ x0 = p.θ[:l_p]
     V_baseline_3 = soly_3.V
 
 
-function objective_function(x)
+function objective_function(x::Vector{Float64},result)
     p.θ[:l_p] = x[1]
+    i = result.iteration
     sol = "Sol_$x "
     sol = solution()
     p.opts.outputs = (:t, :V, :I)
@@ -44,7 +45,7 @@ function objective_function(x)
         Delta_V = fill!(NAN,NaN)
         println("$i is bad")
     end
-    RMSE = sqrt.(sum.(Delta_V^.2) / length(Delta_V))
+    RMSE =  sqrt(sum((Delta_V[i]^2) / length(Delta_V[i])))
     return RMSE
 end
     
