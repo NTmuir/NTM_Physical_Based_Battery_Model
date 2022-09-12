@@ -2,13 +2,13 @@ using PETLION, Plots, Statistics, DataFrames, ProgressBars
 
 println("Starting PETLION")
 
-p = petlion(Chen2020;
+p = petlion(LCO;
 N_p = 10, # discretizations in the cathode
 N_s = 10, # discretizations in the separator
 N_n = 10, # discretizations in the anode
 N_r_p = 10, # discretizations in the solid cathode particles
 N_r_n = 10, # discretizations in the solid anode particles
-temperature = false, # temperature enabled or disabled
+temperature = true, # temperature enabled or disabled
 jacobian = :AD, # :AD (automatic-differenation) for convenience or :symbolic for speed
 )
 
@@ -18,7 +18,7 @@ println("Starting Baseline")
 println("Baseline complete")
 
 
-case = 4
+case = 7
 
             println("Case $case starting")
 
@@ -47,7 +47,7 @@ case = 4
             @time for i in ProgressBar(lb:step:ub)
                 itr = 1
                     while itr <= length(i)
-                    p.θ[:k_n] = i
+                    p.θ[:T₀] = i
                     for k in 1:length(i)
                     sol = "Sol_$k "
                     sol = solution()
@@ -86,13 +86,13 @@ case = 4
         png(Vx6,"Delta Voltage $name GITT")
         png(RMSE3,"RMSE $name GITT")
 
-        p = petlion(Chen2020;
+        p = petlion(LCO;
                     N_p = 10, # discretizations in the cathode
                     N_s = 10, # discretizations in the separator
                     N_n = 10, # discretizations in the anode
                     N_r_p = 10, # discretizations in the solid cathode particles
                     N_r_n = 10, # discretizations in the solid anode particles
-                    temperature = false, # temperature enabled or disabled
+                    temperature = true, # temperature enabled or disabled
                     jacobian = :AD, # :AD (automatic-differenation) for convenience or :symbolic for speed
                                 )
 
@@ -108,9 +108,9 @@ case = 4
         @time for i in ProgressBar(lb:step:ub)
             itr = 1
                 while itr <= length(i)
-                p.θ[:k_n] = i
+                p.θ[:T₀] = i
                 for k in 1:length(i)
-                sol = "Sol_$k "
+                    sol = "Sol_$k "
                 sol = solution()
                 @time Delta_V = HPPC_HVES(itr,sol,p,V_baseline_2)[1]
                     #Sens_Av = HPPC_HVES(itr,sol,p,V_baseline_2)[2]
