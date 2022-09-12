@@ -6,7 +6,7 @@ N_s = 10, # discretizations in the separator
 N_n = 10, # discretizations in the anode
 N_r_p = 10, # discretizations in the solid cathode particles
 N_r_n = 10, # discretizations in the solid anode particles
-temperature = false, # temperature enabled or disabled
+temperature = true, # temperature enabled or disabled
 jacobian = :AD, # :AD (automatic-differenation) for convenience or :symbolic for speed
 )
 

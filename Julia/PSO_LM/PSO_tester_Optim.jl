@@ -25,7 +25,20 @@ function fg!(x::Vector, storage)
     return d1^2 + 100.0 * d2^2
 end
 
-@elapsed res = optimize(f, g!, [0.0, 0.0], ParticleSwarm())
+using TimerOutputs
+const to = TimerOutput()
+    
+f(x) = @timeit to "objective_function" f(x::V)
+
+begin
+reset_timer!(to)
+@timeit to "Trust Region" begin
+    result = optimize(objective_function,[0.0, 0.0],Optim.Options(show_trace = true, time_limit = 10))
+end
+show(to; allocations = false)
+end
+
+@elapsed res = optimize(f, g!, [0.0, 0.0], ParticleSwarm(),Optim.Options(show_trace = true, time_limit = 10))
 
 Optim.minimizer(res)     
 

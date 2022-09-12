@@ -47,7 +47,7 @@ module Search
         elseif case == 7 #T₀
             variable = p.θ[:T₀]
             lb = 233.15
-            step = 2
+            step = 1
             ub = 328.15
             name = "Temperature"
             unit = "(K)"
