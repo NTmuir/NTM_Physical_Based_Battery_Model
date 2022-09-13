@@ -59,7 +59,7 @@ end
 
 println("objective_function loaded in")
     
-@show result = optimize(objective_function,[lb lb; ub ub],PSO(options=Options(debug = true,store_convergence = true,iterations=1000,time_limit = 120)))
+@show result = optimize(objective_function,[lb lb; ub ub],PSO(options=Options(debug = true,store_convergence = true,iterations=1000,time_limit = 1200.0)))
 
 PSO_min = minimizer(result)[1]
 
