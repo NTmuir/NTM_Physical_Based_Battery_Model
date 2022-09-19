@@ -57,8 +57,16 @@ df_GITT = CSV.read("Julia/LGM50 PBBM Validation/210129_LGM50_GITT_Channel_3_Wb_1
 
     df_final_GITT = dropmissing(leftjoin(df_final_GITT_1,df_final_GITT_2, on= :Adjusted_Time_GITT))
 
-    plot(df_final_GITT.Adjusted_Time_GITT,df_final_GITT.Voltage_GITT)
-    plot!(df_final_GITT.Adjusted_Time_GITT,df_final_GITT.PETLION_Voltage)
+    data_RMSE = Base.Matrix(df_final_GITT)
+
+    Delta_V = data_RMSE[:,2] - data_RMSE[:,3]
+
+    RMSE =  sqrt(mean((Delta_V.^2))) * 1000
+
+    plot(df_final_GITT.Adjusted_Time_GITT,df_final_GITT.Voltage_GITT, label = "Measured")
+    plot!(df_final_GITT.Adjusted_Time_GITT,df_final_GITT.PETLION_Voltage, label = "PETLION")
+    
+    
 
     CSV.write("Julia/LGM50 PBBM Validation/CSV Exports/GITT.csv",df_final_GITT)
 
@@ -117,6 +125,13 @@ df_HPPC = CSV.read("Julia/LGM50 PBBM Validation/210209_LGM50_HPPC_1C_25C_Channel
     df_final_HPPC_2 = DataFrame(Adjusted_Time_HPPC=Smooth_time_PETLION_HPPC,PETLION_Voltage = V_baseline_2)
 
     df_final_HPPC = dropmissing(leftjoin(df_final_HPPC_1,df_final_HPPC_2, on= :Adjusted_Time_HPPC))
+
+    data_RMSE_HPPC = Base.Matrix(df_final_HPPC)
+
+    Delta_V_HPPC = data_RMSE_HPPC[:,2] - data_RMSE_HPPC[:,3]
+
+    RMSE_HPPC =  sqrt(mean((Delta_V_HPPC.^2))) * 1000
+    
 
     plot(df_final_HPPC.Adjusted_Time_HPPC,df_final_HPPC.Voltage_HPPC)
     plot!(df_final_HPPC.Adjusted_Time_HPPC,df_final_HPPC.PETLION_Voltage)
@@ -182,6 +197,12 @@ df_WLTP = CSV.read("Julia/LGM50 PBBM Validation/210224_LGM50_WLTP3B_25c_Channel_
     df_final_WLTP_2 = DataFrame(Adjusted_Time_WLTP =Smooth_time_PETLION_WLTP,PETLION_Voltage = V_baseline_4)
 
     df_final_WLTP = dropmissing(leftjoin(df_final_WLTP_1,df_final_WLTP_2, on= :Adjusted_Time_WLTP))
+
+    data_RMSE_WLTP = Base.Matrix(df_final_WLTP)
+
+    Delta_V_WLTP = data_RMSE_WLTP[:,2] - data_RMSE_WLTP[:,3]
+
+    RMSE_WLTP =  sqrt(mean((Delta_V_WLTP.^2))) * 1000
 
     plot(df_final_WLTP.Adjusted_Time_WLTP,df_final_WLTP.Voltage_WLTP)
     plot!(df_final_WLTP.Adjusted_Time_WLTP,df_final_WLTP.PETLION_Voltage)
