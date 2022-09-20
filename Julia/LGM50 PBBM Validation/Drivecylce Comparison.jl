@@ -31,10 +31,10 @@ df_GITT = CSV.read("Julia/LGM50 PBBM Validation/210129_LGM50_GITT_Channel_3_Wb_1
 
     #Comparison Plot of LGM50 Vs PETLION
 
-    GITT1 = plot(Adjusted_Time_GITT,Voltage_GITT, label = "GITT Measured Voltage",xlabel = "Time (s)",ylabel = "Voltage (V)",title = "GITT Comparsion from HVES to PETLION in Voltage")
+    GITT1 = plot(Adjusted_Time_GITT,Voltage_GITT, label = "GITT Measured Voltage",xlabel = "Time (s)",ylabel = "Voltage (V)",title = "GITT Comparsion from HVES to PSO in Voltage")
     
     # PETLION Baseline of LGM50 Chen2020
-    plot!(GITT1,Time_3,V_baseline_3, label = "PETLION Measured Voltage")
+    plot!(GITT1,Time_3,V_baseline_3, label = "PSO Voltage")
     
     GITT2 = plot(Adjusted_Time_GITT,C_rate_GITT, label = "GITT Measured C-rate",xlabel = "Time (s)",ylabel = "C-rate",title = "GITT Comparsion from HVES to PETLION in C-rate")
     
@@ -63,7 +63,8 @@ df_GITT = CSV.read("Julia/LGM50 PBBM Validation/210129_LGM50_GITT_Channel_3_Wb_1
 
     RMSE =  sqrt(mean((Delta_V.^2))) * 1000
 
-    plot(df_final_GITT.Adjusted_Time_GITT,df_final_GITT.Voltage_GITT, label = "Measured")
+    
+    plot(df_final_GITT.Adjusted_Time_GITT,df_final_GITT.Voltage_GITT, title = "Timeseries Sampled for GITT",label = "Measured", ylabel = "Volatge (V)", xlabel = "Time (s)")
     plot!(df_final_GITT.Adjusted_Time_GITT,df_final_GITT.PETLION_Voltage, label = "PETLION")
     
     

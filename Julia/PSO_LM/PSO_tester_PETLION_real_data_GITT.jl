@@ -38,6 +38,7 @@ rand5 = OAT(5)[7]
 x6 = OAT(6)[1]
 lb6 = OAT(6)[2]
 ub6 = OAT(6)[4]
+rand6 = OAT(6)[7]
 
 function objective_function(x)
     @show p.θ[:l_p] = x[1]
@@ -58,12 +59,16 @@ function objective_function(x)
         NAN = zeros(length(sol.V))
         Delta_V = fill!(NAN,NaN)
     end
-
+    
+    Smooth_time_HVES_GITT = round.(Adjusted_Time_GITT)
     Smooth_time_PETLION_GITT = round.(sol.t)
+    
     Array_Adjust = zeros(length(Adjusted_Time_GITT)-length(sol.t))
     Array_Adjust_NAN = fill!(Array_Adjust,1e11)
+    
     PETLION_Time_GITT = append!(Smooth_time_PETLION_GITT ,Array_Adjust_NAN)
     PETLION_Voltage_GITT = append!(sol.V ,Array_Adjust_NAN)
+    
     df_final_GITT_1 = DataFrame(Adjusted_Time_GITT = Smooth_time_HVES_GITT,Voltage_GITT = Voltage_GITT)
     df_final_GITT_2 = DataFrame(Adjusted_Time_GITT =Smooth_time_PETLION_GITT,PETLION_Voltage = sol.V)
 
