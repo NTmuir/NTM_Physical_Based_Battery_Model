@@ -1,6 +1,8 @@
 # Physical_Based_Battery_Model
 MSc Dissertation repository for a PSO Optimisation for a DFN model coded in Julia (PETLION.jl x Metaheurtics.jl)
 
+See the running code section about how to run Julia code - Julia 1.6.4 or later required
+
 # Background
 Experimentally informed datasets do fall short on OCV dynamics, as they use experimental techniques to depict the behaviour of cells which in a broader sense allow the creation of PBM (Physical Based Battery Model). So the use of Data-driven approaches to optimise the OCV fitment is performed to allow more precise emulation of OCV and allow SoC and SoH alogrithms to benefit from a more true modelling method compared to an ECM (Equivelent Circuit Model) which most BMS existing use.
 
@@ -50,5 +52,4 @@ import Pkg; Pkg.add("https://github.com/NTmuir/PETLION.jl.git")
 To add the PSO package see [Metaheuristics.jl](https://github.com/jmejia8/Metaheuristics.jl) to add package
 
 Then Run PSO_tester_PETLION_real_data_WLTP.jl 
-
 
