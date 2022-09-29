@@ -4,10 +4,6 @@ MSc Dissertation repository for a PSO Optimisation for a DFN model coded in Juli
 # Background
 Experimentally informed datasets do fall short on OCV dynamics, as they use experimental techniques to depict the behaviour of cells which in a broader sense allow the creation of PBM (Physical Based Battery Model). So the use of Data-driven approaches to optimise the OCV fitment is performed to allow more precise emulation of OCV and allow SoC and SoH alogrithms to benefit from a more true modelling method compared to an ECM (Equivelent Circuit Model) which most BMS existing use.
 
-A DFN model can be understood be the graphic below (Plett, 2015)
-
-![image](https://user-images.githubusercontent.com/83457561/193078230-e816ae49-3380-42cf-bd51-8a97356946ad.png)
-
 
 # Methodology
 A One at Time (OAT) Sensitivity Analysis was conducted to ensure the 6 strongest parameters to build into the PSO, in where it would prove RMSE is suitable for an optimiser. The overall method for combining the DFN to PSO is presented below:
