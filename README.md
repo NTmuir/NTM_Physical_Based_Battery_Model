@@ -6,7 +6,7 @@ See the running code section about how to run Julia code - Julia 1.6.4 or later 
 Thesis is attached [here](https://github.com/NTmuir/NTM_Physical_Based_Battery_Model/blob/main/MSc%20Engineering%20project%20Final%202021-22%20NTM%20(final).docx)
 
 # Background
-Experimentally informed datasets do fall short on OCV dynamics, as they use experimental techniques to depict the behaviour of cells which in a broader sense allow the creation of PBM (Physical Based Battery Model). So the use of Data-driven approaches to optimise the OCV fitment is performed to allow more precise emulation of OCV and allow SoC and SoH alogrithms to benefit from a more true modelling method compared to an ECM (Equivelent Circuit Model) which most BMS existing use.
+Experimentally informed datasets do fall short on OCV dynamics, as they use experimental techniques to depict the behaviour of cells which in a broader sense allow the creation of PBM's (Physical Based Battery Model). So the use of Data-driven approaches help to optimise the OCV fitment to allow more precise emulation of OCV and potentially allow SoC and SoH alogrithms to benefit from a more physical and chemically informed modelling  compared to an ECM (Equivelent Circuit Model) which most falls short on true cell behaviour.
 
 
 # Methodology
