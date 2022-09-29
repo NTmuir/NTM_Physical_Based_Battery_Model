@@ -1,0 +1,127 @@
+module Drivecycles
+
+export HPPC_HVES, HPPC_5C, GITT
+
+function HPPC_5C(i,sol,p,V_baseline_1)
+
+    p.opts.outputs = (:t, :V, :I)
+    p.opts.SOC = 1
+    p.bounds.V_min = 3
+    p.bounds.V_max = 4.2
+    for j in 1:9
+        simulate!(sol, p, 10, I=-3) #Pulse Discharge
+        simulate!(sol, p, 40, I=:rest) #Relax
+        simulate!(sol, p, 10, I=3) #Pulse Charge
+        simulate!(sol, p, 300, I=-1) #To remove 10% SOC
+        simulate!(sol, p, 3600, I=:rest) #Hour Rest
+    end
+    Delta_V = V_baseline_1 - resize!(sol.V,length(V_baseline_1))
+    if maximum(sol.V) > 5 || minimum(sol.V) < 0
+        NAN = zeros(length(V_baseline_1))
+        Delta_V = fill!(NAN,NaN)
+        println("$i is bad")
+    end
+    RMSE =  sqrt(sum((Delta_V[i]^2) / length(Delta_V[i])))
+            Sens_Av = mean((Delta_V/V_baseline_1).*100)
+            Sens_max = maximum((Delta_V/V_baseline_1).*100)
+            Sens_min = minimum((Delta_V/V_baseline_1).*100)
+            Variation = Sens_max - Sens_min
+    return Delta_V, Sens_Av, Variation,RMSE
+end
+
+function HPPC_HVES(i,sol,p,V_baseline_2)
+        p.opts.outputs = (:t, :V, :I)
+        p.opts.SOC = 1
+        p.bounds.V_min = 3
+        p.bounds.V_max = 4.2
+        for j in 1:20
+            simulate!(sol, p, 10, I=-0.96) #Pulse Discharge
+            simulate!(sol, p, 40, I=:rest) #Relax
+            simulate!(sol, p, 10, I=0.76) #Pulse Charge
+            simulate!(sol, p, 820, I=-0.2) #To remove 10% SOC
+            simulate!(sol, p, 3600,  I=:rest) #Hour Rest
+        end
+        Delta_V = V_baseline_2 - resize!(sol.V,length(V_baseline_2))
+         if maximum(sol.V) > 5 || minimum(sol.V) < 0
+            NAN = zeros(length(V_baseline_2))
+            Delta_V = fill!(NAN,NaN)
+            println("$i is bad")
+        end
+        RMSE =  sqrt(sum((Delta_V[i]^2) / length(Delta_V[i])))
+                Sens_Av = mean((Delta_V/V_baseline_2).*100)
+                Sens_max = maximum((Delta_V/V_baseline_2).*100)
+                Sens_min = minimum((Delta_V/V_baseline_2).*100)
+                Variation = Sens_max - Sens_min
+        return Delta_V, Sens_Av, Variation, RMSE
+    end
+
+    function GITT(i,sol,p,V_baseline_3)
+        p.opts.outputs = (:t, :V, :I)
+        p.opts.SOC = 1
+        p.bounds.V_min = 2.5
+        p.bounds.V_max = 4.2
+        for j in 1:20
+            simulate!(sol, p, 720, I=-0.25)
+            simulate!(sol, p, 4*3600,  I=:rest)
+        end
+        Delta_V = V_baseline_3 - resize!(sol.V,length(V_baseline_3))
+        if maximum(sol.V) > 5 || minimum(sol.V) < 0
+            NAN = zeros(length(V_baseline_3))
+            Delta_V = fill!(NAN,NaN)
+            println("$i is bad")
+        end
+        RMSE = sqrt(sum((Delta_V[i]^2) / length(Delta_V[i])))
+        Sens_Av = mean((Delta_V/V_baseline_3).*100)
+                Sens_max = maximum((Delta_V/V_baseline_3).*100)
+                Sens_min = minimum((Delta_V/V_baseline_3).*100)
+                Variation = Sens_max - Sens_min
+        return Delta_V, Sens_Av, Variation,RMSE
+    end
+
+   function WLTP(i,sol,p,V_baseline_4,C_rate_WLTP,Adjusted_Time_WLTP)
+        p.opts.outputs = (:t, :V, :I)
+        p.opts.SOC = 1
+        p.bounds.V_min = 2.5
+        p.bounds.V_max = 4.2
+            for j in 1:10
+               @time simulate!(sol,p,0.5,I= C_rate_WLTP[1])
+            end
+            Delta_V = V_baseline_4 - resize!(sol.V,length(V_baseline_4))
+        if maximum(sol.V) > 5 || minimum(sol.V) < 0
+            NAN = zeros(length(V_baseline_4))
+            sol.V = fill!(NAN,NaN)
+            println("$i is bad")
+        end
+        RMSE =  sqrt(sum((Delta_V[i]^2) / length(Delta_V[i])))
+        Sens_Av = mean((Delta_V/V_baseline_4).*100)
+                Sens_max = maximum((Delta_V/V_baseline_4).*100)
+                Sens_min = minimum((Delta_V/V_baseline_4).*100)
+                Variation = Sens_max - Sens_min
+        return Delta_V, Sens_Av, Variation,RMSE
+    end
+
+    function GITT_AI(i,sol,p,V_baseline_3)
+        p.opts.outputs = (:t, :V, :I)
+        p.opts.SOC = 1
+        p.bounds.V_min = 2.5
+        p.bounds.V_max = 4.2
+        Delta_V = V_baseline_3 - resize!(sol.V,length(V_baseline_3))
+        for j in 1:2
+            simulate!(sol, p, 50, I=-0.25)
+        end
+        
+        #if maximum(sol.V) > 5 || minimum(sol.V) < 0
+            #NAN = zeros(length(V_baseline_4))
+            #sol = fill!(NAN,NaN)
+            #println("$i is bad")
+        #end
+        
+            Sens_Av = mean((Delta_V/V_baseline_1).*100)
+                Sens_max = maximum((Delta_V/V_baseline_3).*100)
+                Sens_min = minimum((Delta_V/V_baseline_3).*100)
+                Variation = Sens_max - Sens_min
+        return Delta_V, Sens_Av, Variation
+    end
+
+
+end
