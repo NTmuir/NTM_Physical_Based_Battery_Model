@@ -43,7 +43,8 @@ This yielded a 38% improvement in fitness of RMSE voltage which is clearly evide
 
 ![image](https://user-images.githubusercontent.com/83457561/193083768-0be65a26-8a90-42e7-95b7-aeb3dd61dc2d.png)
 
-# Running Code
+# Running Code (Temporary)
+Post submission will make a package for all the functions under a new branch!
 
 To obtain the PETLION library of the LGM50
 ```julia
@@ -51,5 +52,9 @@ import Pkg; Pkg.add("https://github.com/NTmuir/PETLION.jl.git")
 ```
 To add the PSO package see [Metaheuristics.jl](https://github.com/jmejia8/Metaheuristics.jl) to add package
 
-Then Run PSO_tester_PETLION_real_data_WLTP.jl 
+Then load the OAT.jl function and Run PSO_tester_PETLION_real_data_WLTP.jl
+
+To see validation data run DriveCycle Comparison.jl
+
+
 
