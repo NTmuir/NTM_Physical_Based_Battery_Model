@@ -6,7 +6,7 @@ See the running code section about how to run Julia code - Julia 1.6.4 or later 
 Thesis is attached [here](https://github.com/NTmuir/NTM_Physical_Based_Battery_Model/blob/main/17053998_Artifically%20Informed%20Data%20Driven%20Physics%20Based%20Battery%20Model%20Parameterisation%20with%20Particle%20Swarm%20Optimisation%20method%20for%20the%20LGM50%20dataset_ENGR7019.pdf)
 
 # Background
-This project looks into the data-driven techniques used for improving Physical Battery Models (PBM). Inorder to create a PBM there are 26 parameters which drive the output of terminal voltage for a cell using a DFN model. The cost and time required to obtain these values experimentally is significant and still does come short on truely fitting OCV in high dynamic case, so being able to optimise these experimentally obtained values can improve the fitness of terminal voltage.
+This project looks into the data-driven techniques used for improving Physical Battery Models (PBM). Inorder to create a PBM there are 26 parameters which drive the output of terminal voltage for a cell using a DFN model. The cost and time required to obtain these values experimentally is significant and still does come short on truely fitting OCV in high dynamic cases, so being able to optimise these experimentally obtained values can improve the fitness of terminal voltage.
 
 These 26 parameters have different levels of sensitivty for how they impact terminal voltage behaviour, so understanding the strongest parameters to target can help reduce the computational speed to get a high fitting result.
 
