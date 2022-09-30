@@ -1,13 +1,16 @@
 # Physical_Based_Battery_Model
-MSc Dissertation repository for a PSO Optimisation for a DFN model coded in Julia (PETLION.jl x Metaheurtics.jl)
+MSc repository for a PSO Optimisation for a DFN model coded in Julia (PETLION.jl x Metaheurtics.jl)
 
 See the running code section about how to run Julia code - Julia 1.6.4 or later required
 
 Thesis is attached [here](https://github.com/NTmuir/NTM_Physical_Based_Battery_Model/blob/main/MSc%20Engineering%20project%20Final%202021-22%20NTM%20(final).docx)
 
 # Background
-Experimentally informed datasets do fall short on OCV dynamics, as they use experimental techniques to depict the behaviour of cells which in a broader sense allow the creation of PBM's (Physical Based Battery Model). So the use of Data-driven approaches help to optimise the OCV fitment to allow more precise emulation of OCV and potentially allow SoC and SoH alogrithms to benefit from a more physical and chemically informed modelling  compared to an ECM (Equivelent Circuit Model) which most falls short on true cell behaviour.
+This project looks into the data-driven techniques used for improving Physical Battery Models (PBM). Inorder to create a PBM there are 26 parameters which drive the output of terminal voltage for a cell using a DFN model. The cost and time required to obtain these values experimentally is significant and still does come short on truely fitting OCV in high dynamic case, so being able to optimise these experimentally obtained values can improve the fitness of terminal voltage.
 
+These 26 parameters have different levels of sensitivty for how they impact terminal voltage behaviour, so understanding the strongest parameters to target can help reduce the computational speed to get a high fitting result.
+
+The Particle Swarm Optimisation (PSO) uses artifical lives of a population of particles to hone into the global optimal result for a specified objective function (Voltage RMSE). 
 
 # Methodology
 A One at Time (OAT) Sensitivity Analysis was conducted to ensure the 6 strongest parameters to build into the PSO, in where it would prove RMSE is suitable for an optimiser. The overall method for combining the DFN to PSO is presented below:
@@ -41,7 +44,7 @@ This was fed with the WLTP drive cycle with all 6 parameters as unknowns to show
 
 ![image](https://user-images.githubusercontent.com/83457561/193083366-2ab0efb3-ecda-4ed0-a529-c63e68b47022.png)
 
-This yielded a 38% improvement in fitness of RMSE voltage which is clearly evident in capturing the dynamics! Summarized below is the change in parameter values:
+This yielded a 38% improvement in fitness of RMSE voltage which is clearly evident in capturing more of the dynamics! Summarized below is the change in parameter values:
 
 ![image](https://user-images.githubusercontent.com/83457561/193083768-0be65a26-8a90-42e7-95b7-aeb3dd61dc2d.png)
 
@@ -58,5 +61,9 @@ Then load the OAT.jl function and Run PSO_tester_PETLION_real_data_WLTP.jl
 
 To see validation data run DriveCycle Comparison.jl
 
+# References 
 
+[PBM tool orgin](https://github.com/MarcBerliner/PETLION.jl)
+
+[PSO tool orgin](https://github.com/jmejia8/Metaheuristics.jl)
 
